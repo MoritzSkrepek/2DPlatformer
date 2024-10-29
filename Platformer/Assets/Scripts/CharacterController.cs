@@ -1,24 +1,33 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class CharacterController : MonoBehaviour
 {
+    public TextMeshProUGUI collectedCoinsTMP;
+
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
-    
-    private float characterHeight;
+    private Animator animator;
+    private Rigidbody2D rigidBody2D;
+
     private bool isGrounded = true;
     private bool isFacingRight = true;
     private float horizontalInput;
-    private Animator animator;
-    private Rigidbody2D rigidBody2D;
+    private int collectedCoins = 0;
+
+    private float originalMoveSpeed;
+    private float orignalJumpForce;
 
     private void Awake()
     {
         rigidBody2D = gameObject.GetComponent<Rigidbody2D>();
         rigidBody2D.constraints = RigidbodyConstraints2D.FreezeRotation;
         animator = gameObject.GetComponent<Animator>();
+        originalMoveSpeed = moveSpeed;
+        originalMoveSpeed = jumpForce;
     }
 
     void Update()
@@ -44,14 +53,50 @@ public class CharacterController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        isGrounded = true;
-        animator.SetBool("isJumping", !isGrounded);
+        if (collision.CompareTag("Platform"))
+        {
+            isGrounded = true;
+            animator.SetBool("isJumping", !isGrounded);
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        isGrounded = false;
-        animator.SetBool("isJumping", !isGrounded);
+        if (collision.CompareTag("Platform"))
+        {
+            isGrounded = false;
+            animator.SetBool("isJumping", !isGrounded);
+        }
+    }
+
+    public void ActivateSpeedBoost(float boostedSpeed, float duration)
+    {
+        moveSpeed = boostedSpeed;
+        StartCoroutine(ResetSpeedAfterDuration(duration));
+    }
+
+    private IEnumerator ResetSpeedAfterDuration(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        moveSpeed = originalMoveSpeed;
+    }
+
+    public void ActivateJumpBoost(float boostedForce, float duration)
+    {
+        jumpForce = boostedForce;
+        StartCoroutine(ResetJumpForceAfterDuration(duration));
+    }
+
+    private IEnumerator ResetJumpForceAfterDuration(float duration)
+    {
+        yield return new WaitForSeconds((int)duration);
+        jumpForce = orignalJumpForce;
+    }
+
+    public void UpdateCollectedCoins()
+    {
+        collectedCoins++;
+        collectedCoinsTMP.text = "Coins: " + collectedCoins;
     }
 
     private void FlipSprite()
