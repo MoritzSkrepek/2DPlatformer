@@ -2,24 +2,59 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor.ShaderKeywordFilter;
 using UnityEngine;
+using UnityEngine.UIElements;
+using UnityEngine.InputSystem;
+using System.Runtime.CompilerServices;
 
 public class CharacterController : MonoBehaviour
 {
-    public TextMeshProUGUI collectedCoinsTMP;
-
+    
+    [Header("Movement")]
     [SerializeField] private float moveSpeed;
+    private float originalMoveSpeed;
+
+    [Header("Jumping")]
     [SerializeField] private float jumpForce;
+    private float originalJumpForce;
+    [SerializeField] private int maxJumps;
+    private int remainingJumps;
+
+    [Header("ProcessGravity")]
+    [SerializeField] private float baseGravity;
+    [SerializeField] private float maxFallSpeed;
+    [SerializeField] private float fallSpeedMultiplier;
+
+    [Header("Ground Check")]
+    [SerializeField] private Transform groundCheckPos;
+    [SerializeField] private Vector2 groundCheckSize;
+    [SerializeField] private LayerMask groundLayer;
+    private bool isFacingRight = true;
+    private bool isGrounded;
+    private float horizontalMovement;
+
+    [Header("Wall Check")]
+    [SerializeField] private Transform wallCheckPos;
+    [SerializeField] private Vector2 wallCheckSize;
+    [SerializeField] private LayerMask wallLayer;
+
+    [Header("Wall Movement")]
+    [SerializeField] private float wallSlideSpeed;
+    [SerializeField] private float wallSlideDelay;
+    private bool isWallSliding;
+    private bool isWallJumping;
+    private float wallJumpDirection;
+    private float wallJumpTime = 0.5f;
+    private float wallJumpTimer;
+    public Vector2 wallJumpPower = new Vector2(5f, 10f);
+
+    [Header("Collectables")]
+    private int collectedCoins = 0;
+    
     private Animator animator;
     private Rigidbody2D rigidBody2D;
-
-    private bool isGrounded = true;
-    private bool isFacingRight = true;
-    private float horizontalInput;
-    private int collectedCoins = 0;
-
-    private float originalMoveSpeed;
-    private float originalJumpForce;
+    public TextMeshProUGUI collectedCoinsTMP;
 
     private void Awake()
     {
@@ -31,44 +66,101 @@ public class CharacterController : MonoBehaviour
     }
 
     void Update()
-    {
-        horizontalInput = Input.GetAxis("Horizontal");
-
-        FlipSprite();
-
-        if (Input.GetButtonDown("Jump") && isGrounded)
+    {      
+        GroundCheck();
+        ProcessGravity();
+        ProcessWallSlide();
+        ProcessWallJump();
+        if (!isWallJumping)
         {
-            rigidBody2D.velocity = new Vector2(rigidBody2D.velocity.x, jumpForce);
-            isGrounded = false;
-            animator.SetBool("isJumping", !isGrounded);
+            rigidBody2D.velocity = new Vector2(horizontalMovement * moveSpeed, rigidBody2D.velocity.y);
+            FlipSprite();
         }
     }
 
-    private void FixedUpdate()
+    public void Move(InputAction.CallbackContext context)
     {
-        rigidBody2D.velocity = new Vector2(horizontalInput * moveSpeed, rigidBody2D.velocity.y);
-        animator.SetFloat("xVelocity", Mathf.Abs(rigidBody2D.velocity.x));
-        animator.SetFloat("yVelocity", rigidBody2D.velocity.y);
+        horizontalMovement = context.ReadValue<Vector2>().x;
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void Jump(InputAction.CallbackContext context)
     {
-        if (collision.CompareTag("Platform"))
+        // -1, Weil der erste Jump nicht registriert wird (Player ist in dem Moment noch grounded)
+        if (remainingJumps - 1 > 0)
         {
-            isGrounded = true;
-            animator.SetBool("isJumping", !isGrounded);
+            if (context.performed)
+            {
+                rigidBody2D.velocity = new Vector2(rigidBody2D.velocity.x, jumpForce);
+                remainingJumps--;
+            }
+        }
+
+        if (context.performed && wallJumpTimer > 0)
+        {
+            isWallJumping = true;
+            rigidBody2D.velocity = new Vector2(wallJumpDirection * wallJumpPower.x, wallJumpPower.y); // Von Wand wegspringen
+            wallJumpTimer = 0;
+
+            if (transform.localScale.x != wallJumpDirection)
+            {
+                isFacingRight = !isFacingRight;
+                Vector3 ls = transform.localScale;
+                ls.x *= -1f;
+                transform.localScale = ls;
+            }
+
+            Invoke(nameof(CancelWallJump), wallJumpTime + 0.1f);
         }
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    private void ProcessGravity()
     {
-        if (collision.CompareTag("Platform"))
+        if (rigidBody2D.velocity.y < 0)
         {
-            isGrounded = false;
-            animator.SetBool("isJumping", !isGrounded);
+            rigidBody2D.gravityScale = baseGravity * fallSpeedMultiplier; // Schnelleres fallen
+            rigidBody2D.velocity = new Vector2(rigidBody2D.velocity.x, Mathf.Max(rigidBody2D.velocity.y, -maxFallSpeed)); // Cap auf Fallrate setzen
+        }
+        else
+        {
+            rigidBody2D.gravityScale = baseGravity;
         }
     }
 
+    private void ProcessWallSlide()
+    {
+        if (!isGrounded && WallCheck() && horizontalMovement != 0)
+        {
+            isWallSliding = true;
+            rigidBody2D.velocity = new Vector2(rigidBody2D.velocity.x, Mathf.Max(rigidBody2D.velocity.y, -wallSlideSpeed)); // Cap auf Fallrate setzen
+        }
+        else
+        {
+            isWallSliding = false;
+        }
+    }
+
+    private void ProcessWallJump()
+    {
+        if (isWallSliding)
+        {
+            isWallJumping = false;
+            wallJumpDirection = -transform.localScale.x;
+            wallJumpTimer = wallJumpTime;
+            CancelInvoke(nameof(CancelWallJump));
+        }
+        else if (wallJumpTimer > 0f)
+        {
+            wallJumpTimer -= Time.deltaTime;
+        }
+    }
+
+    private void CancelWallJump()
+    {
+        isWallJumping = false;
+    }
+
+
+    // Methos to Activate Boosts
     public void ActivateSpeedBoost(float boostedSpeed, float duration)
     {
         moveSpeed = boostedSpeed;
@@ -92,6 +184,7 @@ public class CharacterController : MonoBehaviour
         yield return new WaitForSeconds((int)duration);
         jumpForce = originalJumpForce;
     }
+    // Methos to Activate Boosts
 
     public void UpdateCollectedCoins()
     {
@@ -101,12 +194,37 @@ public class CharacterController : MonoBehaviour
 
     private void FlipSprite()
     {
-        if (isFacingRight && horizontalInput < 0f || !isFacingRight && horizontalInput > 0f)
+        if (isFacingRight && horizontalMovement < 0f || !isFacingRight && horizontalMovement > 0f)
         {
             isFacingRight = !isFacingRight;
             Vector3 ls = transform.localScale;
             ls.x *= -1f;
             transform.localScale = ls;
         }
+    }
+
+    private void GroundCheck()
+    {
+        if (Physics2D.OverlapBox(groundCheckPos.position, groundCheckSize, 0, groundLayer))
+        {
+            remainingJumps = maxJumps;
+            isGrounded = true;
+        }
+        else
+        {
+            isGrounded = false;
+        }
+    }
+
+    private bool WallCheck()
+    {
+        return Physics2D.OverlapBox(wallCheckPos.position, wallCheckSize, 0, wallLayer);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.white;
+        Gizmos.DrawWireCube(groundCheckPos.position, groundCheckSize);
+        Gizmos.DrawWireCube(wallCheckPos.position, wallCheckSize);
     }
 }
