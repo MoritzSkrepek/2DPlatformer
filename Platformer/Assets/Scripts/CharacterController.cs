@@ -19,7 +19,7 @@ public class CharacterController : MonoBehaviour
     private int collectedCoins = 0;
 
     private float originalMoveSpeed;
-    private float orignalJumpForce;
+    private float originalJumpForce;
 
     private void Awake()
     {
@@ -27,7 +27,7 @@ public class CharacterController : MonoBehaviour
         rigidBody2D.constraints = RigidbodyConstraints2D.FreezeRotation;
         animator = gameObject.GetComponent<Animator>();
         originalMoveSpeed = moveSpeed;
-        originalMoveSpeed = jumpForce;
+        originalJumpForce = jumpForce;
     }
 
     void Update()
@@ -90,7 +90,7 @@ public class CharacterController : MonoBehaviour
     private IEnumerator ResetJumpForceAfterDuration(float duration)
     {
         yield return new WaitForSeconds((int)duration);
-        jumpForce = orignalJumpForce;
+        jumpForce = originalJumpForce;
     }
 
     public void UpdateCollectedCoins()
