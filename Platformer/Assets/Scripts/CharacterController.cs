@@ -15,6 +15,23 @@ public class CharacterController : MonoBehaviour
     [SerializeField] private float moveSpeed;
     private float originalMoveSpeed;
 
+    [Header("Dashing")]
+    [SerializeField] private float dashSpeed;
+    [SerializeField] private float dashDuration;
+    [SerializeField] private float doubleTapTime; // Zeitfenster für Doppelklick
+    [SerializeField] private float dashCooldown;
+    private bool isDashing = false;
+    private float lastTapTime = 0f;
+    private float dashDirection;
+    private float lastHorizontalInput = 0f;
+    private float lastDashTime = -Mathf.Infinity;
+
+    [Header("Sliding")]
+    [SerializeField] private float slideSpeed;
+    [SerializeField] private float slideDuration;
+    private bool isSliding = false;
+    private float slideDirection;
+
     [Header("Jumping")]
     [SerializeField] private float jumpForce;
     private float originalJumpForce;
@@ -71,21 +88,39 @@ public class CharacterController : MonoBehaviour
         ProcessGravity();
         ProcessWallSlide();
         ProcessWallJump();
-        if (!isWallJumping)
+        ProcessDash();
+        if (!isWallJumping && !isDashing)
         {
             rigidBody2D.velocity = new Vector2(horizontalMovement * moveSpeed, rigidBody2D.velocity.y);
             FlipSprite();
         }
     }
 
+    // WASD for movement
     public void Move(InputAction.CallbackContext context)
     {
-        horizontalMovement = context.ReadValue<Vector2>().x;
+        float currentHorizontalInput = context.ReadValue<Vector2>().x;
+
+        // If player is moving and difference between current and horizontal movmenet is greater than a very small number
+        // check for double action (AA / DD) and start dash
+        if (currentHorizontalInput != 0 && Mathf.Abs(currentHorizontalInput - horizontalMovement) > Mathf.Epsilon)
+        {
+            if (Time.time - lastTapTime < doubleTapTime && lastHorizontalInput == currentHorizontalInput && !isDashing)
+            {
+                StartDash(currentHorizontalInput);
+            }
+            lastTapTime = Time.time;
+            lastHorizontalInput = currentHorizontalInput;
+        }
+
+        horizontalMovement = currentHorizontalInput;
     }
 
+    // Space vor jumping
     public void Jump(InputAction.CallbackContext context)
     {
-        // -1, Weil der erste Jump nicht registriert wird (Player ist in dem Moment noch grounded)
+        // Normal jump
+        // -1, because first jump doesnt get registered
         if (remainingJumps - 1 > 0)
         {
             if (context.performed)
@@ -95,12 +130,12 @@ public class CharacterController : MonoBehaviour
             }
         }
 
+        // Wallslide
         if (context.performed && wallJumpTimer > 0)
         {
             isWallJumping = true;
-            rigidBody2D.velocity = new Vector2(wallJumpDirection * wallJumpPower.x, wallJumpPower.y); // Von Wand wegspringen
+            rigidBody2D.velocity = new Vector2(wallJumpDirection * wallJumpPower.x, wallJumpPower.y); // jump away from wall
             wallJumpTimer = 0;
-
             if (transform.localScale.x != wallJumpDirection)
             {
                 isFacingRight = !isFacingRight;
@@ -113,12 +148,22 @@ public class CharacterController : MonoBehaviour
         }
     }
 
+    // C for sliding
+    public void Slide(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            Debug.Log("Sliding");
+        }
+    }
+
+    // Process gravity 
     private void ProcessGravity()
     {
         if (rigidBody2D.velocity.y < 0)
         {
-            rigidBody2D.gravityScale = baseGravity * fallSpeedMultiplier; // Schnelleres fallen
-            rigidBody2D.velocity = new Vector2(rigidBody2D.velocity.x, Mathf.Max(rigidBody2D.velocity.y, -maxFallSpeed)); // Cap auf Fallrate setzen
+            rigidBody2D.gravityScale = baseGravity * fallSpeedMultiplier; // faster falling
+            rigidBody2D.velocity = new Vector2(rigidBody2D.velocity.x, Mathf.Max(rigidBody2D.velocity.y, -maxFallSpeed)); // cap fallrate so it doesnt go to infinite
         }
         else
         {
@@ -126,6 +171,17 @@ public class CharacterController : MonoBehaviour
         }
     }
 
+    // Process dash
+    private void ProcessDash()
+    {
+        // If player dashes and the passed time is greater than dashtime + cooldown
+        if (isDashing && Time.time >= lastDashTime + dashCooldown)
+        {
+            isDashing = false;
+        }
+    }
+
+    // Wallslide process
     private void ProcessWallSlide()
     {
         if (!isGrounded && WallCheck() && horizontalMovement != 0)
@@ -139,6 +195,7 @@ public class CharacterController : MonoBehaviour
         }
     }
 
+    // Walljump process
     private void ProcessWallJump()
     {
         if (isWallSliding)
@@ -154,17 +211,49 @@ public class CharacterController : MonoBehaviour
         }
     }
 
+    // Cancel state of walljump
     private void CancelWallJump()
     {
         isWallJumping = false;
     }
 
+    private void StartDash(float direction)
+    {
+        if (Time.time >= lastDashTime + dashCooldown)
+        {
+            isDashing = true;
+            dashDirection = direction;
+            lastDashTime = Time.time;
+            rigidBody2D.velocity = new Vector2(dashDirection * dashSpeed, rigidBody2D.velocity.y);
+            StartCoroutine(StopDashAfterDuration());
+        }
+    }
 
-    // Methos to Activate Boosts
+    private IEnumerator StopDashAfterDuration()
+    {
+        yield return new WaitForSeconds(dashDuration);
+        isDashing = false;
+    }
+
+    // Activate speed boost
     public void ActivateSpeedBoost(float boostedSpeed, float duration)
     {
         moveSpeed = boostedSpeed;
         StartCoroutine(ResetSpeedAfterDuration(duration));
+    }
+    
+    // Activate jump boost
+    public void ActivateJumpBoost(float boostedForce, float duration)
+    {
+        jumpForce = boostedForce;
+        StartCoroutine(ResetJumpForceAfterDuration(duration));
+    }
+
+    // Functions to specifiy time for potions to subside
+    private IEnumerator ResetJumpForceAfterDuration(float duration)
+    {
+        yield return new WaitForSeconds((int)duration);
+        jumpForce = originalJumpForce;
     }
 
     private IEnumerator ResetSpeedAfterDuration(float duration)
@@ -173,25 +262,14 @@ public class CharacterController : MonoBehaviour
         moveSpeed = originalMoveSpeed;
     }
 
-    public void ActivateJumpBoost(float boostedForce, float duration)
-    {
-        jumpForce = boostedForce;
-        StartCoroutine(ResetJumpForceAfterDuration(duration));
-    }
-
-    private IEnumerator ResetJumpForceAfterDuration(float duration)
-    {
-        yield return new WaitForSeconds((int)duration);
-        jumpForce = originalJumpForce;
-    }
-    // Methos to Activate Boosts
-
+    // Update collected coins TMP
     public void UpdateCollectedCoins()
     {
         collectedCoins++;
         collectedCoinsTMP.text = "Coins: " + collectedCoins;
     }
 
+    // Flips sprite for Movement
     private void FlipSprite()
     {
         if (isFacingRight && horizontalMovement < 0f || !isFacingRight && horizontalMovement > 0f)
@@ -203,6 +281,7 @@ public class CharacterController : MonoBehaviour
         }
     }
 
+    // Checks if collider box is touching ground layer
     private void GroundCheck()
     {
         if (Physics2D.OverlapBox(groundCheckPos.position, groundCheckSize, 0, groundLayer))
@@ -216,11 +295,13 @@ public class CharacterController : MonoBehaviour
         }
     }
 
+    // Checks if collider box is touching wall layer
     private bool WallCheck()
     {
         return Physics2D.OverlapBox(wallCheckPos.position, wallCheckSize, 0, wallLayer);
     }
 
+    // Draws collider boxes
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.white;
