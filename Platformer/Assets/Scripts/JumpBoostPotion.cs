@@ -11,10 +11,10 @@ public class JumpBoostPotion : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            CharacterController characterController = collision.GetComponent<CharacterController>();
-            if (characterController != null) 
+            ConsumableController consumableController = collision.GetComponent<ConsumableController>();
+            if (consumableController != null) 
             {
-                characterController.ActivateJumpBoost(boostedJumpForce, duration);
+                consumableController.ActivateJumpBoost(boostedJumpForce, duration);
                 Destroy(gameObject);
             }
         }

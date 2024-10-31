@@ -8,9 +8,12 @@ public class Coin : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            CharacterController characterController = collision.GetComponent<CharacterController>();
-            characterController.UpdateCollectedCoins();
-            Destroy(gameObject);
+            CollectableController collectableController = collision.GetComponent<CollectableController>();
+            if (collectableController != null)
+            {
+                collectableController.UpdateCollectedCoins();
+                Destroy(gameObject);
+            }
         }
     }
 }

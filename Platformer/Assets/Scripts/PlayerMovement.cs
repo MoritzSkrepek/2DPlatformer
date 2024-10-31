@@ -8,17 +8,21 @@ using UnityEngine.UIElements;
 using UnityEngine.InputSystem;
 using System.Runtime.CompilerServices;
 
-public class CharacterController : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
     
     [Header("Movement")]
-    [SerializeField] private float moveSpeed;
-    private float originalMoveSpeed;
+    [SerializeField] public float moveSpeed;
+
+    [Header("Jumping")]
+    [SerializeField] public float jumpForce;
+    [SerializeField] private int maxJumps;
+    private int remainingJumps;
 
     [Header("Dashing")]
     [SerializeField] private float dashSpeed;
     [SerializeField] private float dashDuration;
-    [SerializeField] private float doubleTapTime; // Zeitfenster für Doppelklick
+    [SerializeField] private float doubleTapTime; 
     [SerializeField] private float dashCooldown;
     private bool isDashing = false;
     private float lastTapTime = 0f;
@@ -27,16 +31,10 @@ public class CharacterController : MonoBehaviour
     private float lastDashTime = -Mathf.Infinity;
 
     [Header("Sliding")]
-    [SerializeField] private float slideSpeed;
     [SerializeField] private float slideDuration;
     private bool isSliding = false;
     private float slideDirection;
-
-    [Header("Jumping")]
-    [SerializeField] private float jumpForce;
-    private float originalJumpForce;
-    [SerializeField] private int maxJumps;
-    private int remainingJumps;
+    private float slideTimer;
 
     [Header("ProcessGravity")]
     [SerializeField] private float baseGravity;
@@ -65,21 +63,15 @@ public class CharacterController : MonoBehaviour
     private float wallJumpTime = 0.5f;
     private float wallJumpTimer;
     public Vector2 wallJumpPower = new Vector2(5f, 10f);
-
-    [Header("Collectables")]
-    private int collectedCoins = 0;
     
     private Animator animator;
     private Rigidbody2D rigidBody2D;
-    public TextMeshProUGUI collectedCoinsTMP;
 
     private void Awake()
     {
         rigidBody2D = gameObject.GetComponent<Rigidbody2D>();
         rigidBody2D.constraints = RigidbodyConstraints2D.FreezeRotation;
         animator = gameObject.GetComponent<Animator>();
-        originalMoveSpeed = moveSpeed;
-        originalJumpForce = jumpForce;
     }
 
     void Update()
@@ -151,9 +143,19 @@ public class CharacterController : MonoBehaviour
     // C for sliding
     public void Slide(InputAction.CallbackContext context)
     {
-        if (context.performed)
+        // While button is held perform slide
+        if (context.started && isGrounded && !isSliding)
         {
             Debug.Log("Sliding");
+            isSliding = true;
+            slideDirection = horizontalMovement;
+            StartCoroutine(PerformSlide());
+        }
+        // If user lets go of butten cancel slide
+        else if (context.canceled)
+        {
+            Debug.Log("Stopping");
+            isSliding = false;
         }
     }
 
@@ -217,6 +219,29 @@ public class CharacterController : MonoBehaviour
         isWallJumping = false;
     }
 
+    private IEnumerator PerformSlide()
+    {
+        float initialSpeed = moveSpeed * 1.5f; // Start speed so the beginning of the slide is faster than normal movement
+        float targetSpeed = moveSpeed * 0.3f;  // Target speed that has to be achieved 
+
+        slideTimer = 0f; 
+        isSliding = true;
+
+        while (isSliding && slideTimer < slideDuration)
+        {
+            // Reduced velocity between target and initial speed
+            float currentSlideSpeed = Mathf.Lerp(initialSpeed, targetSpeed, slideTimer / slideDuration);
+            rigidBody2D.velocity = new Vector2(currentSlideSpeed * slideDirection, rigidBody2D.velocity.y);
+            slideTimer += Time.deltaTime;
+            yield return null;
+        }
+
+        // Nach dem Slide aufhören
+        isSliding = false;
+        slideTimer = 0f;
+    }
+
+
     private void StartDash(float direction)
     {
         if (Time.time >= lastDashTime + dashCooldown)
@@ -233,40 +258,6 @@ public class CharacterController : MonoBehaviour
     {
         yield return new WaitForSeconds(dashDuration);
         isDashing = false;
-    }
-
-    // Activate speed boost
-    public void ActivateSpeedBoost(float boostedSpeed, float duration)
-    {
-        moveSpeed = boostedSpeed;
-        StartCoroutine(ResetSpeedAfterDuration(duration));
-    }
-    
-    // Activate jump boost
-    public void ActivateJumpBoost(float boostedForce, float duration)
-    {
-        jumpForce = boostedForce;
-        StartCoroutine(ResetJumpForceAfterDuration(duration));
-    }
-
-    // Functions to specifiy time for potions to subside
-    private IEnumerator ResetJumpForceAfterDuration(float duration)
-    {
-        yield return new WaitForSeconds((int)duration);
-        jumpForce = originalJumpForce;
-    }
-
-    private IEnumerator ResetSpeedAfterDuration(float duration)
-    {
-        yield return new WaitForSeconds(duration);
-        moveSpeed = originalMoveSpeed;
-    }
-
-    // Update collected coins TMP
-    public void UpdateCollectedCoins()
-    {
-        collectedCoins++;
-        collectedCoinsTMP.text = "Coins: " + collectedCoins;
     }
 
     // Flips sprite for Movement

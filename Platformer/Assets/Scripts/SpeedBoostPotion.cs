@@ -10,12 +10,12 @@ public class SpeedBoostPotion : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            CharacterController characterController = collision.GetComponent<CharacterController>();
-            if (characterController != null)
+            ConsumableController consumableController = collision.GetComponent<ConsumableController>();
+            if (consumableController != null)
             {
-                characterController.ActivateSpeedBoost(boostedSpeed, duration);
+                consumableController.ActivateSpeedBoost(boostedSpeed, duration);
+                Destroy(gameObject);
             }
-            Destroy(gameObject); 
         }
     }
 }
