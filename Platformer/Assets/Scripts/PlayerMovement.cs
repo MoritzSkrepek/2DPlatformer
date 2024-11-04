@@ -86,6 +86,7 @@ public class PlayerMovement : MonoBehaviour
             rigidBody2D.velocity = new Vector2(horizontalMovement * moveSpeed, rigidBody2D.velocity.y);
             FlipSprite();
         }
+        SetAnimator();
     }
 
     // WASD for movement
@@ -112,13 +113,21 @@ public class PlayerMovement : MonoBehaviour
     public void Jump(InputAction.CallbackContext context)
     {
         // Normal jump
-        // -1, because first jump doesnt get registered
-        if (remainingJumps - 1 > 0)
+        if (remainingJumps > 0)
         {
             if (context.performed)
             {
+                // Hold for full jump
                 rigidBody2D.velocity = new Vector2(rigidBody2D.velocity.x, jumpForce);
                 remainingJumps--;
+                animator.SetTrigger("jump");
+            }
+            else if (context.canceled && rigidBody2D.velocity.y > 0)
+            {
+                // Short press for half jump
+                rigidBody2D.velocity = new Vector2(rigidBody2D.velocity.x, rigidBody2D.velocity.y * 0.5f);
+                remainingJumps--;
+                animator.SetTrigger("jump");
             }
         }
 
@@ -128,6 +137,7 @@ public class PlayerMovement : MonoBehaviour
             isWallJumping = true;
             rigidBody2D.velocity = new Vector2(wallJumpDirection * wallJumpPower.x, wallJumpPower.y); // jump away from wall
             wallJumpTimer = 0;
+            animator.SetTrigger("jump");
             if (transform.localScale.x != wallJumpDirection)
             {
                 isFacingRight = !isFacingRight;
@@ -144,9 +154,8 @@ public class PlayerMovement : MonoBehaviour
     public void Slide(InputAction.CallbackContext context)
     {
         // While button is held perform slide
-        if (context.started && isGrounded && !isSliding)
+        if (context.started && isGrounded && !isSliding && horizontalMovement != 0)
         {
-            Debug.Log("Sliding");
             isSliding = true;
             slideDirection = horizontalMovement;
             StartCoroutine(PerformSlide());
@@ -154,7 +163,6 @@ public class PlayerMovement : MonoBehaviour
         // If user lets go of butten cancel slide
         else if (context.canceled)
         {
-            Debug.Log("Stopping");
             isSliding = false;
         }
     }
@@ -241,7 +249,6 @@ public class PlayerMovement : MonoBehaviour
         slideTimer = 0f;
     }
 
-
     private void StartDash(float direction)
     {
         if (Time.time >= lastDashTime + dashCooldown)
@@ -279,6 +286,7 @@ public class PlayerMovement : MonoBehaviour
         {
             remainingJumps = maxJumps;
             isGrounded = true;
+            animator.ResetTrigger("jump");
         }
         else
         {
@@ -290,6 +298,15 @@ public class PlayerMovement : MonoBehaviour
     private bool WallCheck()
     {
         return Physics2D.OverlapBox(wallCheckPos.position, wallCheckSize, 0, wallLayer);
+    }
+
+    private void SetAnimator()
+    {
+        animator.SetFloat("yVelocity", rigidBody2D.velocity.y);
+        animator.SetFloat("magnitude", rigidBody2D.velocity.magnitude);
+        animator.SetBool("isWallSliding", isWallSliding);
+        animator.SetBool("isSliding", isSliding);
+        animator.SetBool("isGrounded", isGrounded);
     }
 
     // Draws collider boxes
