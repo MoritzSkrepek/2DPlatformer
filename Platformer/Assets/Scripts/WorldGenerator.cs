@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+// WILL BE DELETED
+
 public class WorldGenerator : MonoBehaviour
 {
     [SerializeField] private int worldWidth;

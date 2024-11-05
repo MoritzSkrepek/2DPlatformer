@@ -1,22 +1,17 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class JumpBoostPotion : MonoBehaviour
+public class JumpBoostPotion : MonoBehaviour, IItem
 {
-    [SerializeField] float boostedJumpForce = 7.5f;
-    [SerializeField] float duration = 5f;
+    public static event Action<float, float> OnJumpBoostCollected;
+    [SerializeField] private float jumpBoostMultiplier;
+    [SerializeField] private float jumpBoostDuration;
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void Collect()
     {
-        if (collision.CompareTag("Player"))
-        {
-            ConsumableController consumableController = collision.GetComponent<ConsumableController>();
-            if (consumableController != null) 
-            {
-                consumableController.ActivateJumpBoost(boostedJumpForce, duration);
-                Destroy(gameObject);
-            }
-        }
+        OnJumpBoostCollected.Invoke(jumpBoostMultiplier, jumpBoostDuration);
+        Destroy(gameObject);
     }
 }

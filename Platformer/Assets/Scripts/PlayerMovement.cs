@@ -12,10 +12,12 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
     [SerializeField] public float moveSpeed;
+    private float speedMultiplier = 1f;
 
     [Header("Jumping")]
     [SerializeField] public float jumpForce;
     [SerializeField] private int maxJumps;
+    private float jumpBoostMultiplier = 1f;
     private int remainingJumps;
 
     [Header("Dashing")]
@@ -71,6 +73,8 @@ public class PlayerMovement : MonoBehaviour
         rigidBody2D = gameObject.GetComponent<Rigidbody2D>();
         rigidBody2D.constraints = RigidbodyConstraints2D.FreezeRotation;
         animator = gameObject.GetComponent<Animator>();
+        SpeedBoostPotion.OnSpeedBoostCollected += StartSpeedBoost;
+        JumpBoostPotion.OnJumpBoostCollected += StartJumpBoost;
     }
 
     void Update()
@@ -82,7 +86,7 @@ public class PlayerMovement : MonoBehaviour
         ProcessDash();
         if (!isWallJumping && !isDashing)
         {
-            rigidBody2D.velocity = new Vector2(horizontalMovement * moveSpeed, rigidBody2D.velocity.y);
+            rigidBody2D.velocity = new Vector2(horizontalMovement * moveSpeed * speedMultiplier, rigidBody2D.velocity.y);
             FlipSprite();
         }
         SetAnimator();
@@ -117,14 +121,14 @@ public class PlayerMovement : MonoBehaviour
             if (context.performed)
             {
                 // Hold for full jump
-                rigidBody2D.velocity = new Vector2(rigidBody2D.velocity.x, jumpForce);
+                rigidBody2D.velocity = new Vector2(rigidBody2D.velocity.x, jumpForce * jumpBoostMultiplier);
                 remainingJumps--;
                 animator.SetTrigger("jump");
             }
             else if (context.canceled && rigidBody2D.velocity.y > 0)
             {
                 // Short press for half jump
-                rigidBody2D.velocity = new Vector2(rigidBody2D.velocity.x, rigidBody2D.velocity.y * 0.5f);
+                rigidBody2D.velocity = new Vector2(rigidBody2D.velocity.x, rigidBody2D.velocity.y * jumpBoostMultiplier * 0.5f);
                 remainingJumps--;
                 animator.SetTrigger("jump");
             }
@@ -164,6 +168,32 @@ public class PlayerMovement : MonoBehaviour
         {
             isSliding = false;
         }
+    }
+
+    // Start speed boost
+    private void StartSpeedBoost(float multiplier, float duration)
+    {
+        StartCoroutine(SpeedBoostCoroutine(multiplier, duration));
+    }
+
+    private IEnumerator SpeedBoostCoroutine(float multiplier, float duration)
+    {
+        speedMultiplier = multiplier;
+        yield return new WaitForSeconds(duration);
+        speedMultiplier = 1f;
+    }
+
+    // Start jump boost
+    private void StartJumpBoost(float multiplier, float duration)
+    {
+        StartCoroutine(JumpBoostCoroutine(multiplier, duration));
+    }
+
+    private IEnumerator JumpBoostCoroutine(float multiplier, float duration)
+    {
+        jumpBoostMultiplier = multiplier;
+        yield return new WaitForSeconds(duration);
+        jumpBoostMultiplier = 1f;
     }
 
     // Process gravity 
@@ -228,8 +258,8 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator PerformSlide()
     {
-        float initialSpeed = moveSpeed * 1.5f; // Start speed so the beginning of the slide is faster than normal movement
-        float targetSpeed = moveSpeed * 0.3f;  // Target speed that has to be achieved 
+        float initialSpeed = moveSpeed * speedMultiplier * 1.5f; // Start speed so the beginning of the slide is faster than normal movement
+        float targetSpeed = moveSpeed * speedMultiplier * 0.3f;  // Target speed that has to be achieved 
 
         slideTimer = 0f; 
         isSliding = true;
@@ -248,6 +278,7 @@ public class PlayerMovement : MonoBehaviour
         slideTimer = 0f;
     }
 
+    //
     private void StartDash(float direction)
     {
         if (Time.time >= lastDashTime + dashCooldown)
@@ -255,7 +286,7 @@ public class PlayerMovement : MonoBehaviour
             isDashing = true;
             dashDirection = direction;
             lastDashTime = Time.time;
-            rigidBody2D.velocity = new Vector2(dashDirection * dashSpeed, rigidBody2D.velocity.y);
+            rigidBody2D.velocity = new Vector2(dashDirection * speedMultiplier * dashSpeed, rigidBody2D.velocity.y);
             StartCoroutine(StopDashAfterDuration());
         }
     }
@@ -299,6 +330,7 @@ public class PlayerMovement : MonoBehaviour
         return Physics2D.OverlapBox(wallCheckPos.position, wallCheckSize, 0, wallLayer);
     }
 
+    // Set new values each frame for animations
     private void SetAnimator()
     {
         animator.SetFloat("yVelocity", rigidBody2D.velocity.y);

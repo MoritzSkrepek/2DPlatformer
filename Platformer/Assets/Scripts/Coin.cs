@@ -1,19 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Coin : MonoBehaviour
+public class Coin : MonoBehaviour, IItem
 {
-    private void OnTriggerEnter2D(Collider2D collision)
+    public static event Action<int> OnCoinCollected;
+    [SerializeField] private int coinValue;
+    public void Collect()
     {
-        if (collision.CompareTag("Player"))
-        {
-            CollectableController collectableController = collision.GetComponent<CollectableController>();
-            if (collectableController != null)
-            {
-                collectableController.UpdateCollectedCoins();
-                Destroy(gameObject);
-            }
-        }
+        OnCoinCollected.Invoke(coinValue);
+        Destroy(gameObject);
     }
 }

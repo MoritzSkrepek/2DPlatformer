@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2809535216504426637}
   - component: {fileID: 5393019896617951307}
   - component: {fileID: -5042415559381490519}
-  - component: {fileID: 683869733737109628}
+  - component: {fileID: 5721614630322342183}
   m_Layer: 0
   m_Name: Speed Boost Potion
   m_TagString: SpeedPotion
@@ -98,10 +98,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f4def87033dc774dbd8c0d57be281eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boostedSpeed: 10
-  duration: 5
---- !u!70 &683869733737109628
-CapsuleCollider2D:
+  speedMultiplier: 2
+  speedBoostDuration: 5
+--- !u!58 &5721614630322342183
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -132,6 +132,6 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.06}
-  m_Size: {x: 0.73, y: 0.9}
-  m_Direction: 0
+  m_Offset: {x: 0, y: -0.15}
+  serializedVersion: 2
+  m_Radius: 0.35

@@ -1,21 +1,16 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
-public class SpeedBoostPotion : MonoBehaviour
+public class SpeedBoostPotion : MonoBehaviour, IItem
 {
-    [SerializeField] private float boostedSpeed = 7.5f;
-    [SerializeField] private float duration = 5f;
+    public static event Action<float, float> OnSpeedBoostCollected;
+    [SerializeField] private float speedMultiplier;
+    [SerializeField] private float speedBoostDuration;
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void Collect()
     {
-        if (collision.CompareTag("Player"))
-        {
-            ConsumableController consumableController = collision.GetComponent<ConsumableController>();
-            if (consumableController != null)
-            {
-                consumableController.ActivateSpeedBoost(boostedSpeed, duration);
-                Destroy(gameObject);
-            }
-        }
+        OnSpeedBoostCollected.Invoke(speedMultiplier, speedBoostDuration);
+        Destroy(gameObject);
     }
 }

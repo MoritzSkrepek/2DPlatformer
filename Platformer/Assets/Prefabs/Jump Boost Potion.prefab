@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6864076320554627282}
   - component: {fileID: 4142744409345021155}
   - component: {fileID: 2160344560109478947}
-  - component: {fileID: 2814243203684983430}
+  - component: {fileID: 5713866125997570217}
   m_Layer: 0
   m_Name: Jump Boost Potion
   m_TagString: JumpBoostPotion
@@ -98,10 +98,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 409fe5ad9ae48ae4fa05edfb84083963, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boostedJumpForce: 12
-  duration: 5
---- !u!70 &2814243203684983430
-CapsuleCollider2D:
+  jumpBoostMultiplier: 5
+  jumpBoostDuration: 3
+--- !u!58 &5713866125997570217
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -132,6 +132,6 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.06}
-  m_Size: {x: 0.650001, y: 0.9}
-  m_Direction: 0
+  m_Offset: {x: 0, y: -0.15}
+  serializedVersion: 2
+  m_Radius: 0.35
