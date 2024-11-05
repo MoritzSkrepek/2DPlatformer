@@ -10,7 +10,6 @@ using System.Runtime.CompilerServices;
 
 public class PlayerMovement : MonoBehaviour
 {
-    
     [Header("Movement")]
     [SerializeField] public float moveSpeed;
 
