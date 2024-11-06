@@ -5,10 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Platform
-  - Coin
-  - SpeedBoostPotion
-  - JumpBoostPotion
-  - SpeedPotion
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -51,6 +48,9 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 764274823
+    locked: 0
+  - name: Enemy
+    uniqueID: 1273134739
     locked: 0
   - name: Foreground
     uniqueID: 1273134739

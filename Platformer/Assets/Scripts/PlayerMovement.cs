@@ -63,15 +63,15 @@ public class PlayerMovement : MonoBehaviour
     private float wallJumpDirection;
     private float wallJumpTime = 0.5f;
     private float wallJumpTimer;
-    public Vector2 wallJumpPower = new Vector2(5f, 10f);
+    private Vector2 wallJumpPower = new Vector2(5f, 10f);
     
+    // Components
     private Animator animator;
     private Rigidbody2D rigidBody2D;
 
     private void Awake()
     {
         rigidBody2D = gameObject.GetComponent<Rigidbody2D>();
-        rigidBody2D.constraints = RigidbodyConstraints2D.FreezeRotation;
         animator = gameObject.GetComponent<Animator>();
         SpeedBoostPotion.OnSpeedBoostCollected += StartSpeedBoost;
         JumpBoostPotion.OnJumpBoostCollected += StartJumpBoost;
@@ -138,7 +138,8 @@ public class PlayerMovement : MonoBehaviour
         if (context.performed && wallJumpTimer > 0)
         {
             isWallJumping = true;
-            rigidBody2D.velocity = new Vector2(wallJumpDirection * wallJumpPower.x, wallJumpPower.y); // jump away from wall
+            // jump away from wall
+            rigidBody2D.velocity = new Vector2(wallJumpDirection * wallJumpPower.x, wallJumpPower.y); 
             wallJumpTimer = 0;
             animator.SetTrigger("jump");
             if (transform.localScale.x != wallJumpDirection)
@@ -278,7 +279,7 @@ public class PlayerMovement : MonoBehaviour
         slideTimer = 0f;
     }
 
-    //
+    // Start the dash
     private void StartDash(float direction)
     {
         if (Time.time >= lastDashTime + dashCooldown)
@@ -291,6 +292,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // Stop the dash 
     private IEnumerator StopDashAfterDuration()
     {
         yield return new WaitForSeconds(dashDuration);
