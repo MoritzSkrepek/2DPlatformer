@@ -128,7 +128,7 @@ public class PlayerMovement : MonoBehaviour
             else if (context.canceled && rigidBody2D.velocity.y > 0)
             {
                 // Short press for half jump
-                rigidBody2D.velocity = new Vector2(rigidBody2D.velocity.x, rigidBody2D.velocity.y * jumpBoostMultiplier * 0.5f);
+                rigidBody2D.velocity = new Vector2(rigidBody2D.velocity.x, jumpForce * jumpBoostMultiplier * 0.5f);
                 remainingJumps--;
                 animator.SetTrigger("jump");
             }

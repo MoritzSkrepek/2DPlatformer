@@ -15,13 +15,18 @@ public class Enemy : MonoBehaviour
 
     // Random movement parameters
     [Header("Random Movement Timing")]
-    [SerializeField] private float minIdleTime = 1f; // Minimum idle time
-    [SerializeField] private float maxIdleTime = 3f; // Maximum idle time
-    [SerializeField] private float minMoveTime = 1f; // Minimum move time
-    [SerializeField] private float maxMoveTime = 4f; // Maximum move time
+    [SerializeField] private float minIdleTime = 1f;
+    [SerializeField] private float maxIdleTime = 3f;
+    [SerializeField] private float minMoveTime = 1f;
+    [SerializeField] private float maxMoveTime = 4f;
     private float movementTimer = 0f;
     private int moveDirection = 1;
     private bool isFacingRight = true;
+
+    // Jump cooldown
+    [Header("Jump Cooldown")]
+    [SerializeField] private float jumpCooldown = 1.5f;
+    private float lastJumpTime = -10f;
 
     // States for random movement
     private enum EnemyState { Idle, Moving }
@@ -64,41 +69,104 @@ public class Enemy : MonoBehaviour
     // Make enemy jump
     private void FixedUpdate()
     {
-        if (isGrounded && shouldJump)
+        if (playerLocation != null)
         {
-            shouldJump = false;
-            Vector2 direction = (playerLocation.position - transform.position).normalized;
-            Vector2 jumpDirection = direction * jumpForce;
-            rigidBody2D.AddForce(new Vector2(jumpDirection.x, jumpForce), ForceMode2D.Impulse);
+            if (isGrounded && shouldJump && Time.time > lastJumpTime + jumpCooldown)
+            {
+                shouldJump = false;
+                lastJumpTime = Time.time;
+                rigidBody2D.velocity = new Vector2(rigidBody2D.velocity.x, jumpForce);
+            }
         }
     }
 
     // Follow the player
     private void FollowPlayer()
     {
+        // If player is not grounded don't check anything
+        if (!isGrounded) return; 
+
         float direction = Mathf.Sign(playerLocation.position.x - transform.position.x);
         rigidBody2D.velocity = new Vector2(direction * moveSpeed, rigidBody2D.velocity.y);
 
-        RaycastHit2D groundInFront = Physics2D.Raycast(transform.position, new Vector2(direction, 0), 2f, groundLayer);
-        RaycastHit2D gapAhead = Physics2D.Raycast(transform.position + new Vector3(direction, 0, 0), Vector2.down, 2f, groundLayer);
-        RaycastHit2D platformAbove = Physics2D.Raycast(transform.position, Vector2.up, 3f, groundLayer);
-
-        if (isGrounded && !shouldJump)
+        if (isFacingRight && rigidBody2D.velocity.x < 0f || !isFacingRight && rigidBody2D.velocity.x > 0f)
         {
-            if (!groundInFront.collider && !gapAhead.collider)
-            {
-                shouldJump = true;
-            }
-            else if (playerLocation.position.y > transform.position.y && platformAbove.collider)
-            {
-                shouldJump = true;
-            }
-            else
-            {
-                shouldJump = false;
-            }
+            isFacingRight = !isFacingRight;
+            Vector3 ls = transform.localScale;
+            ls.x *= -1f;
+            transform.localScale = ls;
+        }
+
+        // Raycasts
+        RaycastHit2D groundInFront = Physics2D.Raycast(transform.position, new Vector2(direction, 0), 2f, groundLayer);
+        Debug.DrawRay(transform.position, new Vector2(direction, 0) * 2f, Color.red);
+        RaycastHit2D gapAhead = Physics2D.Raycast(transform.position + new Vector3(direction, 0, 0), Vector2.down, 2f, groundLayer);
+        Debug.DrawRay(transform.position + new Vector3(direction, 0, 0), Vector2.down * 2f, Color.blue);
+        RaycastHit2D platformAbove = Physics2D.Raycast(transform.position, Vector2.up, 4f, groundLayer);
+        Debug.DrawRay(transform.position, Vector2.up * 4f, Color.green);
+
+        // No gap / obstacle / platform above in the path
+        if ((gapAhead.collider == null && groundInFront.collider == null) /*|| (platformAbove.collider == null && playerLocation.position.y > transform.position.y)*/)
+        {
+            shouldJump = true;
+        }
+        // Gap/obstacle/Platform above / in front of enemy
+        else if (gapAhead.collider != null || groundInFront.collider != null || platformAbove.collider != null)
+        {
+            shouldJump = false;
         }
     }
+
+    /*
+    // Function to determine if the enemy can jump to reach the player
+    private bool CanReachPlatformWithJump()
+    {
+        float initialVerticalVelocity = rigidBody2D.velocity.y;
+        float gravity = Physics2D.gravity.y * rigidBody2D.gravityScale;
+        float jumpDuration = 2 * Mathf.Abs(initialVerticalVelocity) / Mathf.Abs(gravity);
+
+        float stepSize = 0.1f;
+        Vector2 startPosition = transform.position;
+        float initialHorizontalVelocity = moveSpeed * (isFacingRight ? 1 : -1);
+
+        for (float t = 0; t < jumpDuration; t += stepSize)
+        {
+            float x = startPosition.x + initialHorizontalVelocity * t;
+            float y = startPosition.y + initialVerticalVelocity * t + 0.5f * gravity * Mathf.Pow(t, 2);
+
+            Vector2 pointOnPath = new Vector2(x, y);
+
+            RaycastHit2D hit = Physics2D.Raycast(pointOnPath, Vector2.down, 0.1f, groundLayer);
+
+            if (hit.collider != null && hit.normal.y > 0)
+            {
+                Debug.Log($"Intersected at: {hit.point}");
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    // Debug function to draw jump curve
+    private void DrawJumpPath()
+    {
+        float stepSize = 0.1f;
+        Vector2 startPosition = transform.position;
+        Vector2 initialVelocity = new Vector2(0, jumpForce);
+
+        float gravity = Physics2D.gravity.y * rigidBody2D.gravityScale;
+
+        Vector2 previousPoint = startPosition;
+        for (float t = 0; t < 2.0f; t += stepSize)
+        {
+            float x = startPosition.x + moveSpeed * (isFacingRight ? 1 : -1) * t;
+            float y = startPosition.y + initialVelocity.y * t + 0.5f * gravity * Mathf.Pow(t, 2);
+            Vector2 currentPoint = new Vector2(x, y);
+            Debug.DrawLine(previousPoint, currentPoint, Color.red);
+            previousPoint = currentPoint;
+        }
+    }
+     */
 
     // Stop following the player
     private void StopFollowingPlayer()
@@ -150,9 +218,9 @@ public class Enemy : MonoBehaviour
             yield return null;
         }
     }
-    
+
     // Flip sprite if direction is changed
-    private void FlipSprite() 
+    private void FlipSprite()
     {
         if (isFacingRight && moveDirection == -1 || !isFacingRight && moveDirection == 1)
         {
