@@ -6,6 +6,10 @@ TagManager:
   tags:
   - Platform
   - Enemy
+  - Coin
+  - JumpBoostPotion
+  - SpeedPotion
+  - NextLevelDoor
   layers:
   - Default
   - TransparentFX
@@ -14,7 +18,7 @@ TagManager:
   - Water
   - UI
   - Wall
-  - 
+  - Background
   - 
   - 
   - 

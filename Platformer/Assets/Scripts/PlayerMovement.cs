@@ -64,7 +64,10 @@ public class PlayerMovement : MonoBehaviour
     private float wallJumpTime = 0.5f;
     private float wallJumpTimer;
     private Vector2 wallJumpPower = new Vector2(5f, 10f);
-    
+
+    [Header("Background")]
+    [SerializeField] private LayerMask backgroundLayer;
+
     // Components
     private Animator animator;
     private Rigidbody2D rigidBody2D;
@@ -171,6 +174,32 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // Left click
+    public void LeftClick(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            Debug.Log("Left clicked");
+        }
+    }
+
+    // Right click for interactions
+    public void RightClick(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            Vector2 mousePosition = Mouse.current.position.ReadValue();
+            Vector2 worldPoint = Camera.main.ScreenToWorldPoint(mousePosition);
+            RaycastHit2D hit = Physics2D.Raycast(worldPoint, Vector2.zero, Mathf.Infinity, backgroundLayer);
+            if (hit.collider != null && hit.collider.CompareTag("NextLevelDoor"))
+            {
+                LevelDoor levelDoor = hit.collider.GetComponent<LevelDoor>();
+                levelDoor.LevelDoorClicked();
+            }
+            // Here code for other interactable 
+        }
+    }
+
     // Start speed boost
     private void StartSpeedBoost(float multiplier, float duration)
     {
@@ -267,7 +296,7 @@ public class PlayerMovement : MonoBehaviour
 
         while (isSliding && slideTimer < slideDuration)
         {
-            // Reduced velocity between target and initial speed
+            // Reduced velocity between player and initial speed
             float currentSlideSpeed = Mathf.Lerp(initialSpeed, targetSpeed, slideTimer / slideDuration);
             rigidBody2D.velocity = new Vector2(currentSlideSpeed * slideDirection, rigidBody2D.velocity.y);
             slideTimer += Time.deltaTime;

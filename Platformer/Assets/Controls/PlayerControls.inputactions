@@ -31,6 +31,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "RClick",
+                    "type": "Button",
+                    "id": "969db6c2-837f-4696-9f02-730ba200c389",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "LClick",
+                    "type": "Button",
+                    "id": "305b6442-67e1-46cd-a165-26e54b299b6a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -152,6 +170,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Slide",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0f0e7a48-2b72-4bf6-92ac-2bbe4ae7cc74",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "LClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b22d98a8-9a72-481f-b9a3-a268ca256e1d",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "RClick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
