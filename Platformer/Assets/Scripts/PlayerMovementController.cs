@@ -8,7 +8,9 @@ using UnityEngine.UIElements;
 using UnityEngine.InputSystem;
 using System.Runtime.CompilerServices;
 
-public class PlayerMovement : MonoBehaviour
+// Script to controll the player movement 
+// Keys: WASD, C, Space
+public class PlayerMovementController : MonoBehaviour
 {
     [Header("Movement")]
     [SerializeField] public float moveSpeed;
@@ -171,32 +173,6 @@ public class PlayerMovement : MonoBehaviour
         else if (context.canceled)
         {
             isSliding = false;
-        }
-    }
-
-    // Left click
-    public void LeftClick(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-        {
-            Debug.Log("Left clicked");
-        }
-    }
-
-    // Right click for interactions
-    public void RightClick(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-        {
-            Vector2 mousePosition = Mouse.current.position.ReadValue();
-            Vector2 worldPoint = Camera.main.ScreenToWorldPoint(mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(worldPoint, Vector2.zero, Mathf.Infinity, backgroundLayer);
-            if (hit.collider != null && hit.collider.CompareTag("NextLevelDoor"))
-            {
-                LevelDoor levelDoor = hit.collider.GetComponent<LevelDoor>();
-                levelDoor.LevelDoorClicked();
-            }
-            // Here code for other interactable 
         }
     }
 
