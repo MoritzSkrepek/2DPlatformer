@@ -8,24 +8,8 @@ public class CameraController : MonoBehaviour
     [SerializeField] private Vector3 offset;
     [SerializeField] private float speed;
 
-    // Player itself
-    private Transform player;
-
-    private void Start()
-    {
-        if (player == null)
-        {
-            GameObject character = GameObject.FindGameObjectWithTag("Player");
-            if (character != null)
-            {
-                player = character.transform;
-            }
-            else
-            {
-                Debug.LogWarning("No character found with the tag 'Player'");
-            }
-        }
-    }
+    [Header("Player")]
+    [SerializeField] private Transform player;
 
     void Update()
     {

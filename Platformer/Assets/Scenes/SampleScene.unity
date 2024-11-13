@@ -2833,6 +2833,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offset: {x: 0, y: 0, z: -2}
   speed: 5
+  player: {fileID: 1554338578}
 --- !u!1 &550148433
 GameObject:
   m_ObjectHideFlags: 0
@@ -4223,73 +4224,7 @@ CompositeCollider2D:
   m_GeometryType: 0
   m_GenerationType: 0
   m_EdgeRadius: 0
-  m_ColliderPaths:
-  - m_Collider: {fileID: 809693496}
-    m_ColliderPaths:
-    - - X: 210000000
-        Y: 70000000
-      - X: 0
-        Y: 70000000
-      - X: 0
-        Y: 60000000
-      - X: 210000000
-        Y: 60000000
-    - - X: 50000000
-        Y: 20000000
-      - X: 0
-        Y: 20000000
-      - X: 0
-        Y: 10000000
-      - X: 50000000
-        Y: 10000000
-    - - X: -10000000
-        Y: 20000000
-      - X: -20000000
-        Y: 20000000
-      - X: -20000000
-        Y: 10000000
-      - X: -10000000
-        Y: 10000000
-    - - X: 200000000
-        Y: -10000000
-      - X: 180000000
-        Y: -10000000
-      - X: 180000000
-        Y: -20000000
-      - X: 200000000
-        Y: -20000000
-    - - X: 90000000
-        Y: -20000000
-      - X: -40000000
-        Y: -20000000
-      - X: -40000000
-        Y: -30000000
-      - X: 90000000
-        Y: -30000000
-    - - X: 170000000
-        Y: -20000000
-      - X: 150000000
-        Y: -20000000
-      - X: 150000000
-        Y: -30000000
-      - X: 170000000
-        Y: -30000000
-    - - X: 130000000
-        Y: -20000000
-      - X: 100000000
-        Y: -20000000
-      - X: 100000000
-        Y: -30000000
-      - X: 130000000
-        Y: -30000000
-    - - X: 230000000
-        Y: -40000000
-      - X: 200000000
-        Y: -40000000
-      - X: 200000000
-        Y: -50000000
-      - X: 230000000
-        Y: -50000000
+  m_ColliderPaths: []
   m_CompositePaths:
     m_Paths:
     - - {x: 20.999971, y: 6}
@@ -4507,6 +4442,37 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &856424172
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 856424173}
+  m_Layer: 0
+  m_Name: Start Position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &856424173
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 856424172}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.5, y: -1.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1169531151}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &866418960
 GameObject:
   m_ObjectHideFlags: 0
@@ -5798,7 +5764,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!156049354 &1169531150
 Grid:
   m_ObjectHideFlags: 0
@@ -5831,6 +5797,7 @@ Transform:
   - {fileID: 1393701017}
   - {fileID: 689022137}
   - {fileID: 1629888918}
+  - {fileID: 856424173}
   m_Father: {fileID: 932214567}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1169531152
@@ -5846,9 +5813,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelID: 1
-  levelNamel: Tutorial
+  levelName: Level 1
   coinsCount: 0
   hasSubLevel: 0
+  startPosition: {fileID: 0}
   timeForOneStar: 100
   timeForTwoStars: 80
   timeForThreeStars: 60
@@ -6927,7 +6895,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1554338574
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7975,41 +7943,7 @@ CompositeCollider2D:
   m_GeometryType: 0
   m_GenerationType: 0
   m_EdgeRadius: 0
-  m_ColliderPaths:
-  - m_Collider: {fileID: 1580096943}
-    m_ColliderPaths:
-    - - X: 250000000
-        Y: 110000000
-      - X: 240000000
-        Y: 110000000
-      - X: 240000000
-        Y: -40000000
-      - X: 250000000
-        Y: -40000000
-    - - X: -60000000
-        Y: 90000000
-      - X: -70000000
-        Y: 90000000
-      - X: -70000000
-        Y: -30000000
-      - X: -60000000
-        Y: -30000000
-    - - X: -30000000
-        Y: 70000000
-      - X: -40000000
-        Y: 70000000
-      - X: -40000000
-        Y: 10000000
-      - X: -30000000
-        Y: 10000000
-    - - X: 210000000
-        Y: 60000000
-      - X: 200000000
-        Y: 60000000
-      - X: 200000000
-        Y: 20000000
-      - X: 210000000
-        Y: 20000000
+  m_ColliderPaths: []
   m_CompositePaths:
     m_Paths:
     - - {x: 24.999971, y: -4}
@@ -10699,6 +10633,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5322661055000446963, guid: 7ef378a4a9f10644095443e758d20c25, type: 3}
   m_PrefabInstance: {fileID: 574574500}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2089311544
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2089311545}
+  m_Layer: 0
+  m_Name: Start Position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2089311545
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2089311544}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2, y: -1.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2124007538}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2124007537
 GameObject:
   m_ObjectHideFlags: 0
@@ -10737,6 +10702,7 @@ Transform:
   - {fileID: 1313975159}
   - {fileID: 339537489}
   - {fileID: 1464892810}
+  - {fileID: 2089311545}
   m_Father: {fileID: 932214567}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!156049354 &2124007540
@@ -10764,12 +10730,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelID: 2
-  levelNamel: Level 1
+  levelName: Level 2
   coinsCount: 0
   hasSubLevel: 0
-  timeForOneStar: 0
-  timeForTwoStars: 0
-  timeForThreeStars: 0
+  startPosition: {fileID: 0}
+  timeForOneStar: 120
+  timeForTwoStars: 100
+  timeForThreeStars: 80
   bestTime: 3.4028235e+38
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

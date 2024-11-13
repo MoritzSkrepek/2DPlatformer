@@ -14,18 +14,17 @@ public class GameController : MonoBehaviour
 
     [Header("Player")]
     [SerializeField] private GameObject player;
-
-    [Header("Levels")]
-    [SerializeField] private List<GameObject> levelObjects;
-    private Dictionary<int, GameObject> levels = new Dictionary<int, GameObject>();
-    private int currentActiveLevelID;
-    private LevelData currentLevelData;
+    private Transform levelStartPosition;
 
     [Header("Criterias to enter next level")]
     [SerializeField] private int coinsToWin;
 
     [Header("Message visibility duration")]
     [SerializeField] private float duration;
+
+    private Dictionary<int, GameObject> levels = new Dictionary<int, GameObject>();
+    private int currentActiveLevelID;
+    private LevelData currentLevelData;
 
     // collected coins / coinworth
     private int collectedCoins;
@@ -34,20 +33,19 @@ public class GameController : MonoBehaviour
     // level timer
     private float levelTimer;
 
-    private void Awake()
+    private void Start()
     {
-        foreach (var levelObject in levelObjects)
+        // Get levels in scene
+        LevelData[] levelDataArray = Resources.FindObjectsOfTypeAll<LevelData>();
+
+        // Map levels to dict
+        foreach (LevelData levelData in levelDataArray)
         {
-            LevelData levelData = levelObject.GetComponent<LevelData>();
-            if (levelData)
-            {
-                levels[levelData.levelID] = levelObject;
-                Debug.Log($"Level Name: {levelData.name} Level ID {levelData.levelID}");
-            }
+            levels[levelData.levelID] = levelData.gameObject;
         }
+
         Coin.OnCoinCollected += UpdateCollectedCoinsTMP;
         LevelDoor.OnLevelDoorClicked += LoadNextLevel;
-        PlayerMouseController.OnLevelCompleted += CompleteCurrentLevel;
     }
 
     private void Update()
@@ -59,49 +57,11 @@ public class GameController : MonoBehaviour
         }
     }
 
-    // Update timer UI
-    private void UpdateTimerUI()
-    {
-        int minutes = Mathf.FloorToInt(levelTimer / 60);
-        int seconds = Mathf.FloorToInt(levelTimer % 60);
-        timerTMP.text = string.Format("{0:00}:{1:00}", minutes, seconds); // Format "MM:SS"
-    }
-
-    // Complete the current level
-    private void CompleteCurrentLevel(float completionTime)
-    {
-        if (levels.ContainsKey(currentActiveLevelID))
-        {
-            currentLevelData = levels[currentActiveLevelID].GetComponent<LevelData>();
-            currentLevelData.CompleteLevel(completionTime);
-        }
-        else
-        {
-            Debug.LogError($"Level with ID {currentActiveLevelID} does not exist in the dictionary!");
-        }
-    }
-
-    // Update coins TMP
-    private void UpdateCollectedCoinsTMP(int coinValue)
-    {
-        collectedCoins += 1;
-        totalCoinWorth += coinValue;
-        UpdateUI();
-    }
-
-    // Reset coin count
-    private void ResetCollectedCoins()
-    {
-        collectedCoins = 0;
-        totalCoinWorth = 0;
-    }
-
     // Load specific level by id
-    public void LoadLevel(/*int levelID*/)
+    public void LoadLevel()
     {
-        int levelID = int.Parse(levelInputField.text);
-        Debug.Log(levelID);
-        if (!levels.ContainsKey(levelID))
+        currentActiveLevelID = int.Parse(levelInputField.text);
+        if (!levels.ContainsKey(currentActiveLevelID))
         {
             Debug.LogError("[ERROR] Level does not exist");
             return;
@@ -111,9 +71,12 @@ public class GameController : MonoBehaviour
             levels[currentActiveLevelID].SetActive(false);
         }
 
-        levels[levelID].SetActive(true);
-        player.transform.position = new Vector3(0, 0, 0);
-        currentActiveLevelID = levelID;
+        levels[currentActiveLevelID].SetActive(true);
+
+        //player.transform.position = new Vector3(0, 0, 0);
+        currentLevelData = levels[currentActiveLevelID].GetComponent<LevelData>();
+        player.transform.position = currentLevelData.startPosition.position;
+        player.SetActive(true);
 
         ResetCollectedCoins();
         UpdateUI();
@@ -124,13 +87,36 @@ public class GameController : MonoBehaviour
     {
         if (collectedCoins >= coinsToWin)
         {
-            int nextLevelIndex = (currentActiveLevelID == levelObjects.Count - 1) ? 1 : currentActiveLevelID + 1;
-            levelObjects[currentActiveLevelID].gameObject.SetActive(false);
-            levelObjects[nextLevelIndex].gameObject.SetActive(true);
-            player.transform.position = new Vector3(0, 0, 0);
-            currentActiveLevelID = nextLevelIndex;
-            ResetCollectedCoins();
-            UpdateUI();
+            int nextLevelID = currentActiveLevelID + 1;
+            if (levels.ContainsKey(nextLevelID))
+            {
+                // Deactivate old level
+                levels[currentActiveLevelID].SetActive(false);
+
+                // Activate new level
+                levels[nextLevelID].SetActive(true);
+
+                // Put player on starting position
+                player.transform.position = currentLevelData.startPosition.position;
+
+                // Update current level data
+                currentLevelData.CompleteLevel(levelTimer, collectedCoins);
+                currentActiveLevelID = nextLevelID;
+                currentLevelData = levels[currentActiveLevelID].GetComponent<LevelData>();
+
+                levelTimer = 0f;
+                ResetCollectedCoins();
+                UpdateUI();
+            }
+            else if (!levels.ContainsKey(nextLevelID))
+            {
+                // Something like this if it is desired to auto return to first level 
+                //int nextLevelID = (currentActiveLevelID + 1) % levelObjects.Count;
+                currentLevelData.CompleteLevel(levelTimer, collectedCoins);
+                levelTimer = 0f;
+                ResetCollectedCoins();
+                UpdateUI();
+            }
         }
         else
         {
@@ -152,5 +138,29 @@ public class GameController : MonoBehaviour
         collectedCoinsTMP.text = (collectedCoins == 0 && totalCoinWorth == 0) ? 
             collectedCoinsTMP.text = " " : 
             collectedCoinsTMP.text = $"Coins: {collectedCoins}" + "\n" + $"Worth: {totalCoinWorth}";
+    }
+
+    // Update timer UI
+    private void UpdateTimerUI()
+    {
+        int minutes = Mathf.FloorToInt(levelTimer / 60);
+        int seconds = Mathf.FloorToInt(levelTimer % 60);
+        int milliseconds = Mathf.FloorToInt((levelTimer * 1000) % 1000);
+        timerTMP.text = string.Format("{0:00}:{1:00}:{2:000}", minutes, seconds, milliseconds);
+    }
+
+    // Update coins TMP
+    private void UpdateCollectedCoinsTMP(int coinValue)
+    {
+        collectedCoins += 1;
+        totalCoinWorth += coinValue;
+        UpdateUI();
+    }
+
+    // Reset coin count
+    private void ResetCollectedCoins()
+    {
+        collectedCoins = 0;
+        totalCoinWorth = 0;
     }
 }

@@ -11,8 +11,6 @@ public class PlayerMouseController : MonoBehaviour
     [Header("Interaction layer")]
     [SerializeField] private LayerMask backgroundLayer;
 
-    public static event Action<float> OnLevelCompleted;
-
     // Left click for attacking
     public void LeftClick(InputAction.CallbackContext context)
     {
@@ -37,7 +35,6 @@ public class PlayerMouseController : MonoBehaviour
             {
                 LevelDoor levelDoor = hit.collider.GetComponent<LevelDoor>();
                 levelDoor.LevelDoorClicked();
-                OnLevelCompleted.Invoke(5 /* Here timer */);
             }
         }
     }
