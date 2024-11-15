@@ -249,7 +249,7 @@ GameObject:
   - component: {fileID: 1918285078267677283}
   - component: {fileID: 3318480040251834135}
   m_Layer: 7
-  m_Name: LevelEnd
+  m_Name: Level End
   m_TagString: NextLevelDoor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -98,7 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 409fe5ad9ae48ae4fa05edfb84083963, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpBoostMultiplier: 5
+  jumpBoostMultiplier: 1.5
   jumpBoostDuration: 3
 --- !u!58 &5713866125997570217
 CircleCollider2D:

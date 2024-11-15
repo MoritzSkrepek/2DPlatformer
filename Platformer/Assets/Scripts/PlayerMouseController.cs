@@ -36,6 +36,8 @@ public class PlayerMouseController : MonoBehaviour
                 LevelDoor levelDoor = hit.collider.GetComponent<LevelDoor>();
                 levelDoor.LevelDoorClicked();
             }
+
+            // Here different types of interactions
         }
     }
 }

@@ -11,6 +11,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI collectedCoinsTMP;
     [SerializeField] private TMP_InputField levelInputField;
     [SerializeField] private TextMeshProUGUI timerTMP;
+    [SerializeField] private GameObject levelSelectionUI;
 
     [Header("Player")]
     [SerializeField] private GameObject player;
@@ -58,9 +59,9 @@ public class GameController : MonoBehaviour
     }
 
     // Load specific level by id
-    public void LoadLevel()
+    public void LoadLevel(int levelID)
     {
-        currentActiveLevelID = int.Parse(levelInputField.text);
+        currentActiveLevelID = levelID;
         if (!levels.ContainsKey(currentActiveLevelID))
         {
             Debug.LogError("[ERROR] Level does not exist");
@@ -80,6 +81,7 @@ public class GameController : MonoBehaviour
 
         ResetCollectedCoins();
         UpdateUI();
+        levelSelectionUI.SetActive(false);
     }
 
     // Auto load next level when player clicks on level-door
@@ -96,13 +98,13 @@ public class GameController : MonoBehaviour
                 // Activate new level
                 levels[nextLevelID].SetActive(true);
 
-                // Put player on starting position
-                player.transform.position = currentLevelData.startPosition.position;
-
                 // Update current level data
                 currentLevelData.CompleteLevel(levelTimer, collectedCoins);
                 currentActiveLevelID = nextLevelID;
                 currentLevelData = levels[currentActiveLevelID].GetComponent<LevelData>();
+
+                // Put player on starting position
+                player.transform.position = currentLevelData.startPosition.position;
 
                 levelTimer = 0f;
                 ResetCollectedCoins();
