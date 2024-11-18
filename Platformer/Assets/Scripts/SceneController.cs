@@ -15,6 +15,11 @@ public class SceneController : MonoBehaviour
         SceneManager.LoadScene("MainMenu");
     }
 
+    public void OnContinueButtonClicked()
+    {
+        
+    }
+
     public void OnExitClicked()
     {
         // For closing in editor

@@ -10263,9 +10263,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03715c2e2d9f78b40be6c7b9dcbb869c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collectedCoinsTMP: {fileID: 866418962}
-  levelInputField: {fileID: 0}
-  timerTMP: {fileID: 1421823565}
+  levelUI: {fileID: 550148433}
   levelSelectionUI: {fileID: 1333262431}
   player: {fileID: 1554338571}
   coinsToWin: 3

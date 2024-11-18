@@ -8,10 +8,10 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     [Header("UI")]
-    [SerializeField] private TextMeshProUGUI collectedCoinsTMP;
-    [SerializeField] private TMP_InputField levelInputField;
-    [SerializeField] private TextMeshProUGUI timerTMP;
+    [SerializeField] private GameObject levelUI;
     [SerializeField] private GameObject levelSelectionUI;
+    private TextMeshProUGUI timerTMP;
+    private TextMeshProUGUI collectedCoinsTMP;
 
     [Header("Player")]
     [SerializeField] private GameObject player;
@@ -36,6 +36,9 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
+        timerTMP = levelUI.transform.Find("LevelTimer").GetComponent<TextMeshProUGUI>();
+        collectedCoinsTMP = levelUI.transform.Find("Coins").GetComponent<TextMeshProUGUI>();
+
         // Get levels in scene
         LevelData[] levelDataArray = Resources.FindObjectsOfTypeAll<LevelData>();
 
@@ -43,6 +46,9 @@ public class GameController : MonoBehaviour
         foreach (LevelData levelData in levelDataArray)
         {
             levels[levelData.levelID] = levelData.gameObject;
+
+            // Register each level on the progession manager to save progression
+            ProgressManager.Instance.RegisterLevel(levelData.levelID, levelData.levelName);
         }
 
         Coin.OnCoinCollected += UpdateCollectedCoinsTMP;
@@ -99,7 +105,7 @@ public class GameController : MonoBehaviour
                 levels[nextLevelID].SetActive(true);
 
                 // Update current level data
-                currentLevelData.CompleteLevel(levelTimer, collectedCoins);
+                CompleteCurrentLevel();
                 currentActiveLevelID = nextLevelID;
                 currentLevelData = levels[currentActiveLevelID].GetComponent<LevelData>();
 
@@ -114,7 +120,7 @@ public class GameController : MonoBehaviour
             {
                 // Something like this if it is desired to auto return to first level 
                 //int nextLevelID = (currentActiveLevelID + 1) % levelObjects.Count;
-                currentLevelData.CompleteLevel(levelTimer, collectedCoins);
+                CompleteCurrentLevel();
                 levelTimer = 0f;
                 ResetCollectedCoins();
                 UpdateUI();
@@ -132,6 +138,30 @@ public class GameController : MonoBehaviour
         informationMesh.gameObject.SetActive(true);
         yield return new WaitForSeconds(duration);
         informationMesh.gameObject.SetActive(false);
+    }
+
+    private void CompleteCurrentLevel()
+    {
+        if (currentLevelData == null)
+        {
+            Debug.LogError("No current level data available!");
+            return;
+        }
+
+        currentLevelData.CompleteLevel(levelTimer, collectedCoins);
+
+        float completionTime = levelTimer;
+        int stars = currentLevelData.GetStarRating();
+        int coinsCollected = collectedCoins;
+
+        // Update progress in manager
+        ProgressManager.Instance.UpdateLevelProgress(
+            currentActiveLevelID,
+            true, // Markiere Level als abgeschlossen
+            completionTime,
+            stars,
+            coinsCollected
+        );
     }
 
     // Update the collected coins ui

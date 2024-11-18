@@ -64,4 +64,9 @@ public class LevelData : MonoBehaviour
             return;
         }
     }
+
+    public int GetStarRating()
+    {
+        return acquiredStars;
+    }
 }
