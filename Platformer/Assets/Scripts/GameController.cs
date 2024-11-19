@@ -12,6 +12,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameObject levelSelectionUI;
     private TextMeshProUGUI timerTMP;
     private TextMeshProUGUI collectedCoinsTMP;
+    private TextMeshProUGUI totalCollectedCoinsTMP;
 
     [Header("Player")]
     [SerializeField] private GameObject player;
@@ -20,8 +21,8 @@ public class GameController : MonoBehaviour
     [Header("Criterias to enter next level")]
     [SerializeField] private int coinsToWin;
 
-    [Header("Message visibility duration")]
-    [SerializeField] private float duration;
+    [Header("Message visibility visibilityTimer")]
+    [SerializeField] private float visibilityTimer;
 
     private Dictionary<int, GameObject> levels = new Dictionary<int, GameObject>();
     private int currentActiveLevelID;
@@ -36,21 +37,18 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
-        timerTMP = levelUI.transform.Find("LevelTimer").GetComponent<TextMeshProUGUI>();
-        collectedCoinsTMP = levelUI.transform.Find("Coins").GetComponent<TextMeshProUGUI>();
-
-        // Get levels in scene
-        LevelData[] levelDataArray = Resources.FindObjectsOfTypeAll<LevelData>();
-
-        // Map levels to dict
-        foreach (LevelData levelData in levelDataArray)
+        SetGUIComponents();
+        RegisterLevels();
+        if (PlayerPrefs.GetString("LoadType") == "Continue" && PlayerPrefs.HasKey("NextLevelID"))
         {
-            levels[levelData.levelID] = levelData.gameObject;
-
-            // Register each level on the progession manager to save progression
-            ProgressManager.Instance.RegisterLevel(levelData.levelID, levelData.levelName);
+            ContinueWithNextLevel();
+            PlayerPrefs.DeleteKey("LoadType");
+            PlayerPrefs.Save();
         }
-
+        else
+        {
+            Debug.LogWarning("Continue requested, but no NextLevelID found.");
+        }
         Coin.OnCoinCollected += UpdateCollectedCoinsTMP;
         LevelDoor.OnLevelDoorClicked += LoadNextLevel;
     }
@@ -64,10 +62,49 @@ public class GameController : MonoBehaviour
         }
     }
 
+    // User clicked on continue and if there exists a level after the last completed one, 
+    // load into this directly
+    private void ContinueWithNextLevel()
+    {
+        if (PlayerPrefs.HasKey("NextLevelID"))
+        {
+            int nextLevelID = PlayerPrefs.GetInt("NextLevelID");
+            LoadLevel(nextLevelID);
+        }
+        else
+        {
+            Debug.Log("All levels finished. Can't continue");
+        }
+    }
+
+    // Get UI components from main game object
+    private void SetGUIComponents()
+    {
+        timerTMP = levelUI.transform.Find("LevelTimer").GetComponent<TextMeshProUGUI>();
+        collectedCoinsTMP = levelUI.transform.Find("Coins").GetComponent<TextMeshProUGUI>();
+        totalCollectedCoinsTMP = levelSelectionUI.transform.Find("Total Collected Coins TMP").GetComponent<TextMeshProUGUI>();
+    }
+
+    private void RegisterLevels()
+    {
+        // Get levels in scene
+        LevelData[] levelDataArray = Resources.FindObjectsOfTypeAll<LevelData>();
+
+        // Map levels to dict
+        foreach (LevelData levelData in levelDataArray)
+        {
+            levels[levelData.levelID] = levelData.gameObject;
+
+            // Register each level on the progession manager to save progression
+            ProgressManager.Instance.RegisterLevel(levelData.levelID, levelData.levelName);
+        }
+    }
+
     // Load specific level by id
     public void LoadLevel(int levelID)
     {
         currentActiveLevelID = levelID;
+        Debug.Log(currentActiveLevelID);
         if (!levels.ContainsKey(currentActiveLevelID))
         {
             Debug.LogError("[ERROR] Level does not exist");
@@ -136,7 +173,7 @@ public class GameController : MonoBehaviour
     private IEnumerator showInfomrationMessage(TextMeshProUGUI informationMesh)
     {
         informationMesh.gameObject.SetActive(true);
-        yield return new WaitForSeconds(duration);
+        yield return new WaitForSeconds(visibilityTimer);
         informationMesh.gameObject.SetActive(false);
     }
 

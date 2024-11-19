@@ -11,7 +11,6 @@ public class ProgressManager : MonoBehaviour
 
     private void Awake()
     {
-        DontDestroyOnLoad(this);
         if (Instance == null)
         {
             Instance = this;
@@ -91,6 +90,19 @@ public class ProgressManager : MonoBehaviour
                 levelProgressData[progress.levelID] = progress;
             }
         }
+    }
+
+    // Get the id from the next incomplete level
+    public int GetNextIncompleteLevelID()
+    {
+        foreach (var progress in levelProgressData.Values.OrderBy(l => l.levelID))
+        {
+            if (progress.isCompleted == false)
+            {
+                return progress.levelID;
+            }
+        }
+        return -1; // All levels completed
     }
 }
 
