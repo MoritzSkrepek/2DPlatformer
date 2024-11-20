@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 // Used for updates in the UI
 public class GameController : MonoBehaviour
@@ -10,6 +11,7 @@ public class GameController : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject levelUI;
     [SerializeField] private GameObject levelSelectionUI;
+    [SerializeField] private GameObject PauseMenu;
     private TextMeshProUGUI timerTMP;
     private TextMeshProUGUI collectedCoinsTMP;
     private TextMeshProUGUI totalCollectedCoinsTMP;
@@ -21,33 +23,33 @@ public class GameController : MonoBehaviour
     [Header("Criterias to enter next level")]
     [SerializeField] private int coinsToWin;
 
-    [Header("Message visibility visibilityTimer")]
+    [Header("Notification visibility duration")]
     [SerializeField] private float visibilityTimer;
 
     private Dictionary<int, GameObject> levels = new Dictionary<int, GameObject>();
     private int currentActiveLevelID;
     private LevelData currentLevelData;
 
-    // collected coins / coinworth
+    // Collected coins / coinworth
     private int collectedCoins;
     private int totalCoinWorth;
 
-    // level timer
+    // Level timer
     private float levelTimer;
+
+    // Game state
+    private bool isGamePaused = false;
 
     private void Start()
     {
         SetGUIComponents();
         RegisterLevels();
+        // If user clicks on continue and there is a next level load into that level
         if (PlayerPrefs.GetString("LoadType") == "Continue" && PlayerPrefs.HasKey("NextLevelID"))
         {
             ContinueWithNextLevel();
             PlayerPrefs.DeleteKey("LoadType");
             PlayerPrefs.Save();
-        }
-        else
-        {
-            Debug.LogWarning("Continue requested, but no NextLevelID found.");
         }
         Coin.OnCoinCollected += UpdateCollectedCoinsTMP;
         LevelDoor.OnLevelDoorClicked += LoadNextLevel;
@@ -59,6 +61,17 @@ public class GameController : MonoBehaviour
         {
             levelTimer += Time.deltaTime;
             UpdateTimerUI();
+        }
+    }
+
+    // User pressed Escape
+    public void PauseGame(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            isGamePaused = !isGamePaused;
+            PauseMenu.SetActive(isGamePaused);
+            Time.timeScale = (isGamePaused) ? Time.timeScale = 0f : Time.timeScale = 1f;
         }
     }
 
@@ -83,6 +96,8 @@ public class GameController : MonoBehaviour
         timerTMP = levelUI.transform.Find("LevelTimer").GetComponent<TextMeshProUGUI>();
         collectedCoinsTMP = levelUI.transform.Find("Coins").GetComponent<TextMeshProUGUI>();
         totalCollectedCoinsTMP = levelSelectionUI.transform.Find("Total Collected Coins TMP").GetComponent<TextMeshProUGUI>();
+
+        totalCollectedCoinsTMP.text = ProgressManager.Instance.GetTotalCollectedCoins().ToString();
     }
 
     private void RegisterLevels()

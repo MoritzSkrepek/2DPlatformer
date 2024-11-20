@@ -92,6 +92,18 @@ public class ProgressManager : MonoBehaviour
         }
     }
 
+    // Get the total of collected coins from all levels
+    public int GetTotalCollectedCoins()
+    {
+        int totalCollectedCoins = 0;
+        foreach (var progress in levelProgressData.Values.OrderBy(l => l.levelID))
+        {
+            Debug.Log(progress.collectedCoins);
+            totalCollectedCoins += progress.collectedCoins;
+        }
+        return totalCollectedCoins;
+    }
+
     // Get the id from the next incomplete level
     public int GetNextIncompleteLevelID()
     {
@@ -103,6 +115,13 @@ public class ProgressManager : MonoBehaviour
             }
         }
         return -1; // All levels completed
+    }
+
+    // FOR DEBUG
+    // Clear player prefs
+    public void ClearPlayerPrefs()
+    {
+        PlayerPrefs.DeleteAll();
     }
 }
 
