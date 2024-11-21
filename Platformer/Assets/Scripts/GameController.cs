@@ -55,6 +55,13 @@ public class GameController : MonoBehaviour
         LevelDoor.OnLevelDoorClicked += LoadNextLevel;
     }
 
+    // Unsubscribe from events when objects is not loaded anymore
+    private void OnDisable()
+    {
+        Coin.OnCoinCollected -= UpdateCollectedCoinsTMP;
+        LevelDoor.OnLevelDoorClicked -= LoadNextLevel;
+    }
+
     private void Update()
     {
         if (currentActiveLevelID != 0)
