@@ -11,7 +11,7 @@ public class GameController : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject levelUI;
     [SerializeField] private GameObject levelSelectionUI;
-    [SerializeField] private GameObject PauseMenu;
+    [SerializeField] private GameObject pauseMenu;
     private TextMeshProUGUI timerTMP;
     private TextMeshProUGUI collectedCoinsTMP;
     private TextMeshProUGUI totalCollectedCoinsTMP;
@@ -38,7 +38,7 @@ public class GameController : MonoBehaviour
     private float levelTimer;
 
     // Game state
-    private bool isGamePaused = false;
+    public bool isGamePaused = false;
 
     private void Start()
     {
@@ -77,9 +77,17 @@ public class GameController : MonoBehaviour
         if (context.performed)
         {
             isGamePaused = !isGamePaused;
-            PauseMenu.SetActive(isGamePaused);
+            pauseMenu.SetActive(isGamePaused);
             Time.timeScale = (isGamePaused) ? Time.timeScale = 0f : Time.timeScale = 1f;
         }
+    }
+
+    // Set game state to unpaused
+    public void UnpauseGame()
+    {
+        isGamePaused = false;
+        Time.timeScale = 1.0f;
+        pauseMenu.SetActive(isGamePaused);
     }
 
     // User clicked on continue and if there exists a level after the last completed one, 
@@ -139,7 +147,8 @@ public class GameController : MonoBehaviour
 
         levels[currentActiveLevelID].SetActive(true);
 
-        //player.transform.position = new Vector3(0, 0, 0);
+        levelUI.SetActive(true);
+        
         currentLevelData = levels[currentActiveLevelID].GetComponent<LevelData>();
         player.transform.position = currentLevelData.startPosition.position;
         player.SetActive(true);

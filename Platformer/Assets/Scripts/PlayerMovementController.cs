@@ -83,9 +83,6 @@ public class PlayerMovementController : MonoBehaviour
     }
 
     // Unsubscribe from events when objects is not loaded anymore
-    // This is needed so when the user quits to main menu and loads
-    // into a level again potion events get referenced to the old
-    // movement script
     private void OnDisable()
     {
         SpeedBoostPotion.OnSpeedBoostCollected -= StartSpeedBoost;
