@@ -7,6 +7,9 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
 
+    [Header("Attacks")]
+    [SerializeField] public float attackDamage;
+
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheckPos;
     [SerializeField] private Vector2 groundCheckSize;
