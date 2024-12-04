@@ -19,6 +19,7 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private int maxHeartCount;
     private int currentHeartCount;  
     private float damageAmount;
+    private float remaningDamageAmount;
 
     private void Start()
     {
@@ -30,6 +31,8 @@ public class PlayerHealth : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         Enemy enemy = collision.collider.GetComponent<Enemy>();
+        // In the future this will be a switch for all sorts of collisions
+        // e.g.: different enemies, traps, etc...
         if (enemy != null)
         {
             TakeDamage(enemy.attackDamage);
@@ -50,7 +53,8 @@ public class PlayerHealth : MonoBehaviour
             else
             {
                 currentHealth = 0;
-                Debug.Log("Game over");
+                GameStateController.Instance.TriggerGameOver();
+                InputController.Instance.DisableInputActions();
             }
         }
         healthBarSlider.value = maxHealth - currentHealth;

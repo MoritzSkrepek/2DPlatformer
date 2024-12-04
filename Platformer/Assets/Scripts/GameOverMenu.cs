@@ -1,21 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
-public class PauseMenu : MonoBehaviour
+public class GameOverMenu : MonoBehaviour
 {
-    public void ContinueLevel()
+    public void RetryLevel()
     {
-        GameStateController.Instance.UnpauseGame();
+        // TODO
+        GameStateController.Instance.SetGameState(GameState.Playing);
         InputController.Instance.EnableInputActions();
     }
 
     public void ReturnToMainMenu()
     {
-        GameStateController.Instance.UnpauseGame();
-        SceneManager.LoadScene("MainMenu");
+        SceneController.Instance.OnBackButtonClicked();
     }
 
     public void QuitGame()

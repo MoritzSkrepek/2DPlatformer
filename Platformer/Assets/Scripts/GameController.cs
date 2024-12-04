@@ -11,7 +11,6 @@ public class GameController : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject levelUI;
     [SerializeField] private GameObject levelSelectionUI;
-    [SerializeField] private GameObject pauseMenu;
     private TextMeshProUGUI timerTMP;
     private TextMeshProUGUI collectedCoinsTMP;
     private TextMeshProUGUI totalCollectedCoinsTMP;
@@ -36,9 +35,6 @@ public class GameController : MonoBehaviour
 
     // Level timer
     private float levelTimer;
-
-    // Game state
-    public bool isGamePaused = false;
 
     private void Start()
     {
@@ -72,22 +68,21 @@ public class GameController : MonoBehaviour
     }
 
     // User pressed Escape
-    public void PauseGame(InputAction.CallbackContext context)
+    public void TogglePause(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
-            isGamePaused = !isGamePaused;
-            pauseMenu.SetActive(isGamePaused);
-            Time.timeScale = (isGamePaused) ? Time.timeScale = 0f : Time.timeScale = 1f;
+            if (GameStateController.Instance.CurrentState == GameState.Playing)
+            {
+                GameStateController.Instance.PauseGame();
+                InputController.Instance.DisableInputActions();
+            }
+            else if (GameStateController.Instance.CurrentState == GameState.Paused)
+            {
+                GameStateController.Instance.UnpauseGame();
+                InputController.Instance.EnableInputActions();
+            }
         }
-    }
-
-    // Set game state to unpaused
-    public void UnpauseGame()
-    {
-        isGamePaused = false;
-        Time.timeScale = 1.0f;
-        pauseMenu.SetActive(isGamePaused);
     }
 
     // User clicked on continue and if there exists a level after the last completed one, 
