@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
+    public static PlayerHealth Instance;
+
     [Header("Healthbar UI")]
     [SerializeField] private TextMeshProUGUI heartCountTMP;
     [SerializeField] private Slider healthBarSlider;
@@ -21,11 +24,31 @@ public class PlayerHealth : MonoBehaviour
     private float damageAmount;
     private float remaningDamageAmount;
 
+    [Header("Player")]
+    [SerializeField] private float hitVisibilityDurtation;
+    private GameObject character;
+    private SpriteRenderer characterSpriteRenderer;
+    
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     private void Start()
     {
         currentHealth = maxHealth;
         currentHeartCount = maxHeartCount;
         heartCountTMP.text = maxHeartCount.ToString();
+        character = GameObject.Find("Character");
+        characterSpriteRenderer = character.GetComponent<SpriteRenderer>();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -35,8 +58,16 @@ public class PlayerHealth : MonoBehaviour
         // e.g.: different enemies, traps, etc...
         if (enemy != null)
         {
+            StartCoroutine(Flash());
             TakeDamage(enemy.attackDamage);
         }
+    }
+
+    private IEnumerator Flash()
+    {
+        characterSpriteRenderer.color = Color.red;
+        yield return new WaitForSeconds(hitVisibilityDurtation);
+        characterSpriteRenderer.color = Color.white;
     }
 
     private void TakeDamage(float damage) 
@@ -62,16 +93,14 @@ public class PlayerHealth : MonoBehaviour
 
     private void UpdateUI()
     {
-        heartCountTMP.text = currentHeartCount.ToString();  
+        heartCountTMP.text = currentHeartCount.ToString();
     }
 
-    public void ResetHealth()
+    public void ResetHealthBar()
     {
-        healthBarSlider.value = maxHealth;
-    }
-
-    public void ResetHeartCoint()
-    {
+        currentHealth = maxHealth;
+        currentHeartCount = maxHeartCount;
         heartCountTMP.text = maxHeartCount.ToString();
+        healthBarSlider.value = healthBarSlider.minValue;
     }
 }

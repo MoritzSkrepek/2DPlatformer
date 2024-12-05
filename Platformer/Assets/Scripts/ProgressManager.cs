@@ -118,7 +118,7 @@ public class ProgressManager : MonoBehaviour
     }
 
     // FOR DEBUG
-    // Clear player prefs
+    // Clear character prefs
     public void ClearPlayerPrefs()
     {
         PlayerPrefs.DeleteAll();

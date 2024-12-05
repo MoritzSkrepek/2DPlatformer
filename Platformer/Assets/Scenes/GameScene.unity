@@ -639,6 +639,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5775667980952290142, guid: 108b08ac51696af44b1058f93f1a94ca, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5775667980952290142, guid: 108b08ac51696af44b1058f93f1a94ca, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5775667980952290142, guid: 108b08ac51696af44b1058f93f1a94ca, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7353244214161620149, guid: 108b08ac51696af44b1058f93f1a94ca, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7353244214161620149, guid: 108b08ac51696af44b1058f93f1a94ca, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7353244214161620149, guid: 108b08ac51696af44b1058f93f1a94ca, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8051069279986616050, guid: 108b08ac51696af44b1058f93f1a94ca, type: 3}
       propertyPath: m_IsTrigger
       value: 0
@@ -659,6 +683,7 @@ GameObject:
   - component: {fileID: 195276786}
   - component: {fileID: 195276788}
   - component: {fileID: 195276789}
+  - component: {fileID: 195276790}
   m_Layer: 5
   m_Name: Handle
   m_TagString: Untagged
@@ -745,6 +770,36 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &195276790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 195276785}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!4 &202530839 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6864076320554627282, guid: 6c2a4f04b9b89db4e8ed065a6103a4a9, type: 3}
@@ -7129,7 +7184,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1333262436}
         m_TargetAssemblyTypeName: SceneController, Assembly-CSharp
         m_MethodName: OnBackButtonClicked
         m_Mode: 1
@@ -8343,6 +8398,7 @@ GameObject:
   - component: {fileID: 1333262434}
   - component: {fileID: 1333262433}
   - component: {fileID: 1333262432}
+  - component: {fileID: 1333262436}
   m_Layer: 5
   m_Name: Level Selection UI
   m_TagString: Untagged
@@ -8437,6 +8493,20 @@ RectTransform:
   m_AnchoredPosition: {x: 960, y: 540.054}
   m_SizeDelta: {x: 1920, y: 1080.108}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1333262436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1333262431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f05ef3ca778d084da4056c69886a9fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  infoTMP: {fileID: 0}
+  visibilityTimer: 0
 --- !u!4 &1358479023 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2809535216504426637, guid: f68250f5d04e3f94bb127dcceb5bff00, type: 3}
@@ -9747,6 +9817,7 @@ MonoBehaviour:
   gameOverUI: {fileID: 1505119}
   maxHealth: 10
   maxHeartCount: 3
+  hitVisibilityDurtation: 0.25
 --- !u!1 &1561944294
 GameObject:
   m_ObjectHideFlags: 0

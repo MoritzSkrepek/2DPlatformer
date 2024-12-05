@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,7 @@ public class GameOverMenu : MonoBehaviour
 {
     public void RetryLevel()
     {
-        // TODO
+        GameController.Instance.RetryCurrentLevel();
         GameStateController.Instance.SetGameState(GameState.Playing);
         InputController.Instance.EnableInputActions();
     }

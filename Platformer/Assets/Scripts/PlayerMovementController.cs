@@ -8,10 +8,12 @@ using UnityEngine.UIElements;
 using UnityEngine.InputSystem;
 using System.Runtime.CompilerServices;
 
-// Script to controll the player movement 
+// Script to controll the character movement 
 // Keys: WASD, C, Space
 public class PlayerMovementController : MonoBehaviour
 {
+    public static PlayerMovementController Instance { get; private set; }
+
     [Header("Movement")]
     [SerializeField] public float moveSpeed;
     private float speedMultiplier = 1f;
@@ -76,6 +78,14 @@ public class PlayerMovementController : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
         rigidBody2D = gameObject.GetComponent<Rigidbody2D>();
         animator = gameObject.GetComponent<Animator>();
         SpeedBoostPotion.OnSpeedBoostCollected += StartSpeedBoost;
@@ -109,7 +119,7 @@ public class PlayerMovementController : MonoBehaviour
     {
         float currentHorizontalInput = context.ReadValue<Vector2>().x;
 
-        // If player is moving and difference between current and horizontal movmenet is greater than a very small number
+        // If character is moving and difference between current and horizontal movmenet is greater than a very small number
         // check for double action (AA / DD) and start dash
         if (currentHorizontalInput != 0 && Mathf.Abs(currentHorizontalInput - horizontalMovement) > Mathf.Epsilon)
         {
@@ -196,6 +206,16 @@ public class PlayerMovementController : MonoBehaviour
         speedMultiplier = 1f;
     }
 
+    public void CancelSpeedBoost()
+    {
+
+    }
+
+    public void CancelJumpBoost()
+    {
+
+    }
+
     // Start jump boost
     private void StartJumpBoost(float multiplier, float duration)
     {
@@ -226,7 +246,7 @@ public class PlayerMovementController : MonoBehaviour
     // Process dash
     private void ProcessDash()
     {
-        // If player dashes and the passed time is greater than dashtime + cooldown
+        // If character dashes and the passed time is greater than dashtime + cooldown
         if (isDashing && Time.time >= lastDashTime + dashCooldown)
         {
             isDashing = false;
@@ -279,7 +299,7 @@ public class PlayerMovementController : MonoBehaviour
 
         while (isSliding && slideTimer < slideDuration)
         {
-            // Reduced velocity between player and initial speed
+            // Reduced velocity between character and initial speed
             float currentSlideSpeed = Mathf.Lerp(initialSpeed, targetSpeed, slideTimer / slideDuration);
             rigidBody2D.velocity = new Vector2(currentSlideSpeed * slideDirection, rigidBody2D.velocity.y);
             slideTimer += Time.deltaTime;

@@ -83,10 +83,10 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    // Follow the player
+    // Follow the character
     private void FollowPlayer()
     {
-        // If player is not grounded don't check anything
+        // If character is not grounded don't check anything
         if (!isGrounded) return; 
 
         float direction = Mathf.Sign(playerLocation.position.x - transform.position.x);
@@ -121,7 +121,7 @@ public class Enemy : MonoBehaviour
     }
 
     /*
-    // Function to determine if the enemy can jump to reach the player
+    // Function to determine if the enemy can jump to reach the character
     private bool CanReachPlatformWithJump()
     {
         float initialVerticalVelocity = rigidBody2D.velocity.y;
@@ -171,7 +171,7 @@ public class Enemy : MonoBehaviour
     }
      */
 
-    // Stop following the player
+    // Stop following the character
     private void StopFollowingPlayer()
     {
         rigidBody2D.velocity = new Vector2(0f, rigidBody2D.velocity.y);

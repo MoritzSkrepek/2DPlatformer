@@ -8,6 +8,8 @@ using UnityEngine.InputSystem;
 // Used for updates in the UI
 public class GameController : MonoBehaviour
 {
+    public static GameController Instance { get; private set; }
+
     [Header("UI")]
     [SerializeField] private GameObject levelUI;
     [SerializeField] private GameObject levelSelectionUI;
@@ -35,6 +37,18 @@ public class GameController : MonoBehaviour
 
     // Level timer
     private float levelTimer;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Start()
     {
@@ -153,7 +167,7 @@ public class GameController : MonoBehaviour
         levelSelectionUI.SetActive(false);
     }
 
-    // Auto load next level when player clicks on level-door
+    // Auto load next level when character clicks on level-door
     private void LoadNextLevel(TextMeshProUGUI informationMesh)
     {
         if (collectedCoins >= coinsToWin)
@@ -172,11 +186,12 @@ public class GameController : MonoBehaviour
                 currentActiveLevelID = nextLevelID;
                 currentLevelData = levels[currentActiveLevelID].GetComponent<LevelData>();
 
-                // Put player on starting position
+                // Put character on starting position
                 player.transform.position = currentLevelData.startPosition.position;
 
                 levelTimer = 0f;
                 ResetCollectedCoins();
+                PlayerHealth.Instance.ResetHealthBar();
                 UpdateUI();
             }
             else if (!levels.ContainsKey(nextLevelID))
@@ -186,6 +201,7 @@ public class GameController : MonoBehaviour
                 CompleteCurrentLevel();
                 levelTimer = 0f;
                 ResetCollectedCoins();
+                PlayerHealth.Instance.ResetHealthBar();
                 UpdateUI();
             }
         }
@@ -193,6 +209,14 @@ public class GameController : MonoBehaviour
         {
             StartCoroutine(showInfomrationMessage(informationMesh));
         }
+    }
+
+    public void RetryCurrentLevel() 
+    {
+        levelTimer = 0f;
+        ResetCollectedCoins();
+        PlayerHealth.Instance.ResetHealthBar();
+        LoadLevel(currentActiveLevelID);
     }
 
     // Show the user that he cant enter next level yet
