@@ -11,12 +11,16 @@ public class PlayerMouseController : MonoBehaviour
     [Header("Interaction layer")]
     [SerializeField] private LayerMask backgroundLayer;
 
+    
+
     // Left click for attacking
     public void LeftClick(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
-            Debug.Log("Left clicked");
+            Vector2 mousePosition = Mouse.current.position.ReadValue();
+            Vector2 worldPoint = Camera.main.ScreenToWorldPoint(mousePosition);
+            PlayerAttackController.Instance.ShootProjectile(worldPoint);
         }
     }
 

@@ -53,7 +53,7 @@ public class PlayerHealth : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Enemy enemy = collision.collider.GetComponent<Enemy>();
+        EnemyMovementController enemy = collision.collider.GetComponent<EnemyMovementController>();
         // In the future this will be a switch for all sorts of collisions
         // e.g.: different enemies, traps, etc...
         if (enemy != null)

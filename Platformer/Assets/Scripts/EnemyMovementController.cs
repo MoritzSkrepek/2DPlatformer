@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class EnemyMovementController : MonoBehaviour
 {
     [Header("Movement")]
     [SerializeField] private float moveSpeed;

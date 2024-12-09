@@ -9363,6 +9363,7 @@ GameObject:
   - component: {fileID: 1554338585}
   - component: {fileID: 1554338583}
   - component: {fileID: 1554338586}
+  - component: {fileID: 1554338587}
   - component: {fileID: 1554338579}
   - component: {fileID: 1554338582}
   m_Layer: 0
@@ -9818,6 +9819,22 @@ MonoBehaviour:
   maxHealth: 10
   maxHeartCount: 3
   hitVisibilityDurtation: 0.25
+--- !u!114 &1554338587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1554338571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0de23653fca49f54f95eb4d0bb23edfa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  basicProjectile: {fileID: 3635284281368793436, guid: 5cb56bd5ea9f8a248b61ea09784cd502, type: 3}
+  iceballProjectile: {fileID: 0}
+  fireballProjectile: {fileID: 0}
+  projectileMovementSpeed: 25
 --- !u!1 &1561944294
 GameObject:
   m_ObjectHideFlags: 0
