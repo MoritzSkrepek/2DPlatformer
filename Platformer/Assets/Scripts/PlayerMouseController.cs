@@ -11,17 +11,25 @@ public class PlayerMouseController : MonoBehaviour
     [Header("Interaction layer")]
     [SerializeField] private LayerMask backgroundLayer;
 
-    
+    [Header("Time between attacks")]
+    [SerializeField] private float attackTimer;
+    private float lastAttackTime = -Mathf.Infinity;
 
     // Left click for attacking
     public void LeftClick(InputAction.CallbackContext context)
     {
-        if (context.performed)
+        if (context.performed && CanAttack())
         {
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             Vector2 worldPoint = Camera.main.ScreenToWorldPoint(mousePosition);
             PlayerAttackController.Instance.ShootProjectile(worldPoint);
+            lastAttackTime = Time.time;
         }
+    }
+
+    private bool CanAttack()
+    {
+        return (Time.time >= lastAttackTime + attackTimer) ? true : false;
     }
 
     // Right click for world interactions

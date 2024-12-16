@@ -287,7 +287,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 2.5
   jumpForce: 8
-  attackDamage: 0
+  attackDamage: 2
   groundCheckPos: {fileID: 5156463214667759848}
   groundCheckSize: {x: 0.8, y: 0.06}
   groundLayer:
@@ -312,6 +312,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 5
   hitVisibilityDurtation: 0.25
+  lootTable:
+  - itemPrefab: {fileID: 5854805191469468553, guid: 7ef378a4a9f10644095443e758d20c25, type: 3}
+    dropChance: 60
+  - itemPrefab: {fileID: 5127964936684831844, guid: 8d624c9684713714d80b0f94f623b727, type: 3}
+    dropChance: 40
 --- !u!1 &2165134813600879659
 GameObject:
   m_ObjectHideFlags: 0

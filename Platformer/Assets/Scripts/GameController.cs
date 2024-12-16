@@ -151,6 +151,7 @@ public class GameController : MonoBehaviour
         }
         if (currentActiveLevelID != 0)
         {
+            Debug.Log("Deactivating level");
             levels[currentActiveLevelID].SetActive(false);
         }
 
@@ -213,6 +214,7 @@ public class GameController : MonoBehaviour
 
     public void RetryCurrentLevel() 
     {
+        //levels[currentActiveLevelID].SetActive(false);
         levelTimer = 0f;
         ResetCollectedCoins();
         PlayerHealth.Instance.ResetHealthBar();

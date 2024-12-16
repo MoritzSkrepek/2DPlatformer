@@ -19,8 +19,8 @@ public class Projectile : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(EnableCollider());
-        Destroy(gameObject, projectileLifeSpan);
+        StartCoroutine(EnableCollider()); // Enable box collider shortly after shooting so it doesnt hit player
+        Destroy(gameObject, projectileLifeSpan); // Destroy the projectile after its given lifetime
     }
 
     private IEnumerator EnableCollider()
@@ -44,7 +44,6 @@ public class Projectile : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("Collision!");
         LayerMask collisionLayer = collision.gameObject.layer;
         if (collisionLayer == LayerMask.NameToLayer("Ground") || collisionLayer == LayerMask.NameToLayer("Wall"))
         {

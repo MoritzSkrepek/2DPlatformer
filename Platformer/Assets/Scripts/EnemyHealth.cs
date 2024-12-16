@@ -12,13 +12,16 @@ public class EnemyHealth : MonoBehaviour
     [Header("Enemy")]
     [SerializeField] private float hitVisibilityDurtation;
 
+    [Header("Loot Table")]
+    public List<LootItem> lootTable = new List<LootItem>();
+
     // Enemy healtbar
     private Slider healthBar;
 
     // Enemy sprite
     private SpriteRenderer spriteRenderer;
 
-    private void Awake()
+    private void Start()
     {
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         Transform canvasTransform = gameObject.transform.Find("Canvas");
@@ -35,6 +38,7 @@ public class EnemyHealth : MonoBehaviour
         StartCoroutine(Flash());
         if (currentHealth <= 0)
         {
+            DropItemOnDefeat();
             Destroy(gameObject);
         }
     }
@@ -44,5 +48,17 @@ public class EnemyHealth : MonoBehaviour
         spriteRenderer.color = Color.red;
         yield return new WaitForSeconds(hitVisibilityDurtation);
         spriteRenderer.color = Color.white;
+    }
+
+    public void DropItemOnDefeat()
+    {
+        foreach (LootItem lootItem in lootTable)
+        {
+            if (Random.Range(0f, 100f) <= lootItem.dropChance)
+            {
+                Instantiate(lootItem.itemPrefab, new Vector2(gameObject.transform.position.x, gameObject.transform.position.y + 0.5f), Quaternion.identity);
+                break; // Ensure only one item drops 
+            }
+        }
     }
 }

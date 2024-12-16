@@ -18,7 +18,6 @@ public class PlayerAttackController : MonoBehaviour
 
     private float offsetY = 1f;
 
-
     private void Awake()
     {
         if (Instance == null)
@@ -49,10 +48,16 @@ public class PlayerAttackController : MonoBehaviour
         }
         */
 
-        Vector2 direction = (targetPosition - (Vector2)transform.position).normalized;
+        // Berechne die Richtung von der Spawn-Position zum Zielpunkt
         Vector2 spawnPosition = new Vector2(transform.position.x, transform.position.y + offsetY);
+        Vector2 direction = (targetPosition - spawnPosition).normalized;
+
+        // Erzeuge das Projektil an der Spawn-Position
         GameObject projectile = Instantiate(basicProjectile, spawnPosition, Quaternion.identity);
+
+        // Setze die Geschwindigkeit des Projektils, um es in Richtung des Zielpunkts zu bewegen
         projectile.GetComponent<Rigidbody2D>().velocity = direction * projectileMovementSpeed;
+
     }
 }
 

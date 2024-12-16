@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.InputSystem;
 using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 
 // Script to controll the character movement 
 // Keys: WASD, C, Space
@@ -76,6 +77,21 @@ public class PlayerMovementController : MonoBehaviour
     private Animator animator;
     private Rigidbody2D rigidBody2D;
 
+
+    // Subscribe to movement related events
+    private void OnEnable()
+    {
+        SpeedBoostPotion.OnSpeedBoostCollected += StartSpeedBoost;
+        JumpBoostPotion.OnJumpBoostCollected += StartJumpBoost;
+    }
+
+    // Unsubscribe from movement related events
+    private void OnDisable()
+    {
+        SpeedBoostPotion.OnSpeedBoostCollected -= StartSpeedBoost;
+        JumpBoostPotion.OnJumpBoostCollected -= StartJumpBoost;
+    }
+
     private void Awake()
     {
         if (Instance == null)
@@ -86,17 +102,12 @@ public class PlayerMovementController : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        rigidBody2D = gameObject.GetComponent<Rigidbody2D>();
-        animator = gameObject.GetComponent<Animator>();
-        SpeedBoostPotion.OnSpeedBoostCollected += StartSpeedBoost;
-        JumpBoostPotion.OnJumpBoostCollected += StartJumpBoost;
     }
 
-    // Unsubscribe from events when objects is not loaded anymore
-    private void OnDisable()
+    private void Start()
     {
-        SpeedBoostPotion.OnSpeedBoostCollected -= StartSpeedBoost;
-        JumpBoostPotion.OnJumpBoostCollected -= StartJumpBoost;
+        rigidBody2D = gameObject.GetComponent<Rigidbody2D>();
+        animator = gameObject.GetComponent<Animator>();
     }
 
     void Update()

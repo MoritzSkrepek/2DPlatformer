@@ -28,7 +28,18 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private float hitVisibilityDurtation;
     private GameObject character;
     private SpriteRenderer characterSpriteRenderer;
-    
+
+    // Subscribe to player health related events
+    private void OnEnable()
+    {
+        HeartItem.OnHeartCollected += HealPlayer;
+    }
+
+    // Unsubscribe to player health related events
+    private void OnDisable()
+    {
+        HeartItem.OnHeartCollected -= HealPlayer;
+    }
 
     private void Awake()
     {
@@ -46,6 +57,7 @@ public class PlayerHealth : MonoBehaviour
     {
         currentHealth = maxHealth;
         currentHeartCount = maxHeartCount;
+        healthBarSlider.maxValue = maxHealth;
         heartCountTMP.text = maxHeartCount.ToString();
         character = GameObject.Find("Character");
         characterSpriteRenderer = character.GetComponent<SpriteRenderer>();
@@ -89,6 +101,13 @@ public class PlayerHealth : MonoBehaviour
             }
         }
         healthBarSlider.value = maxHealth - currentHealth;
+    }
+
+    private void HealPlayer(int healAmount)
+    {
+        Debug.Log("Healing Player");
+        currentHeartCount += healAmount;
+        UpdateUI();
     }
 
     private void UpdateUI()
