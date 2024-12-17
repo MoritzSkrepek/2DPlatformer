@@ -82,26 +82,26 @@ public class PlayerHealth : MonoBehaviour
         characterSpriteRenderer.color = Color.white;
     }
 
-    private void TakeDamage(float damage) 
+    private void TakeDamage(float damage)
     {
         currentHealth -= damage;
+        while (currentHealth <= 0 && currentHeartCount > 0)
+        {
+            float overflowDamage = Mathf.Abs(currentHealth); // Overflowing damage
+            currentHeartCount--; 
+            currentHealth = maxHealth; 
+            currentHealth -= overflowDamage;
+            UpdateUI();
+        }
         if (currentHealth <= 0)
         {
-            if (currentHeartCount > 0)
-            {
-                currentHeartCount--;
-                currentHealth = maxHealth;
-                UpdateUI();
-            }
-            else
-            {
-                currentHealth = 0;
-                GameStateController.Instance.TriggerGameOver();
-                InputController.Instance.DisableInputActions();
-            }
+            currentHealth = 0;
+            GameStateController.Instance.TriggerGameOver();
+            InputController.Instance.DisableInputActions();
         }
         healthBarSlider.value = maxHealth - currentHealth;
     }
+
 
     private void HealPlayer(int healAmount)
     {

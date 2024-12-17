@@ -43,13 +43,20 @@ public class PlayerMouseController : MonoBehaviour
             RaycastHit2D hit = Physics2D.Raycast(worldPoint, Vector2.zero, Mathf.Infinity, backgroundLayer);
             
             // Complete current level and enter next level
-            if (hit.collider != null && hit.collider.CompareTag("NextLevelDoor"))
+            if (hit.collider != null)
             {
-                LevelDoor levelDoor = hit.collider.GetComponent<LevelDoor>();
-                levelDoor.LevelDoorClicked();
-            }
+                switch (hit.collider.tag)
+                {
+                    case "NextLevelDoor":
+                        LevelDoor levelDoor = hit.collider.GetComponent<LevelDoor>();
+                        levelDoor.LevelDoorClicked();
+                        break;
 
-            // Here different types of interactions
+                    // Default case: no hit                
+                    default:
+                        break;
+                }
+            }
         }
     }
 }
