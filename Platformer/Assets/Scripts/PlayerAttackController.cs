@@ -10,11 +10,8 @@ public class PlayerAttackController : MonoBehaviour
     public static PlayerAttackController Instance;
 
     [Header("Projectile Prefabs")]
-    [SerializeField] private GameObject basicProjectile;
-    [SerializeField] private GameObject iceballProjectile;
-    [SerializeField] private GameObject fireballProjectile;
-    [SerializeField] private float projectileMovementSpeed;
-    private GameObject activeProjectile;
+    [SerializeField] private GameObject fireballProjectilePrefab;
+    [SerializeField] private GameObject iceballProjectilePrefab;
 
     private float offsetY = 1f;
 
@@ -30,40 +27,37 @@ public class PlayerAttackController : MonoBehaviour
         }
     }
 
-    public void ShootProjectile(Vector2 targetPosition /*ProjectileType type = ProjectileType.basic*/)
+    public void ShootProjectile(Vector2 targetPosition, ProjectileType projectileType)
     {
-        /* This code is for future impl. when there are different attack types 
-         
-        activeProjectile = null;
-        switch (type)
-        {
-            case ProjectileType.basic:
-                projectile = basicProjectile; break;
-            case ProjectileType.iceball:
-                projectile = iceballProjectile; break;
-            case ProjectileType.fireball:
-                projectile = fireballProjectile; break; 
-            default:
-                projectile.SetActive(false); break;
-        }
-        */
+        GameObject selectedProjectilePrefab = GetProjectilePrefab(projectileType);
 
-        // Berechne die Richtung von der Spawn-Position zum Zielpunkt
+        if (selectedProjectilePrefab == null) return;
+
+        // Berechne die Richtung
         Vector2 spawnPosition = new Vector2(transform.position.x, transform.position.y + offsetY);
         Vector2 direction = (targetPosition - spawnPosition).normalized;
 
-        // Erzeuge das Projektil an der Spawn-Position
-        GameObject projectile = Instantiate(basicProjectile, spawnPosition, Quaternion.identity);
+        // Erzeuge das Projektil
+        GameObject projectileObject = Instantiate(selectedProjectilePrefab, spawnPosition, Quaternion.identity);
 
-        // Setze die Geschwindigkeit des Projektils, um es in Richtung des Zielpunkts zu bewegen
-        projectile.GetComponent<Rigidbody2D>().velocity = direction * projectileMovementSpeed;
+        // Initialisiere das Projektil
+        BasicProjectile projectile = projectileObject.GetComponent<BasicProjectile>();
+        if (projectile != null)
+        {
+            projectile.Initialize(direction);
+        }
+    }
 
+    private GameObject GetProjectilePrefab(ProjectileType projectileType)
+    {
+        switch (projectileType)
+        {
+            case ProjectileType.Fireball:
+                return fireballProjectilePrefab;
+            case ProjectileType.Iceball:
+                return iceballProjectilePrefab;
+            default:
+                return null;
+        }
     }
 }
-
-public enum ProjectileType
-{
-    basic,
-    fireball,
-    iceball
-};

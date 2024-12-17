@@ -9920,6 +9920,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 8327b783-0538-40fb-9e01-a5234e6174f6
     m_ActionName: Player/Pause
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1554338585}
+        m_TargetAssemblyTypeName: PlayerMouseController, Assembly-CSharp
+        m_MethodName: Scroll
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: c1b81d11-fd52-4244-967c-b4fc8ba5700f
+    m_ActionName: Player/Scroll[/Mouse/forwardButton,/Mouse/backButton]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -10039,10 +10055,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0de23653fca49f54f95eb4d0bb23edfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basicProjectile: {fileID: 3635284281368793436, guid: 5cb56bd5ea9f8a248b61ea09784cd502, type: 3}
-  iceballProjectile: {fileID: 0}
-  fireballProjectile: {fileID: 0}
-  projectileMovementSpeed: 25
+  fireballProjectilePrefab: {fileID: 7265471103394803714, guid: ec748bc1caa0a954d805bba821b6dfb6, type: 3}
+  iceballProjectilePrefab: {fileID: 483819048213780780, guid: cd7c8f8a62b829d4594de169f82bc64e, type: 3}
 --- !u!1 &1561944294
 GameObject:
   m_ObjectHideFlags: 0

@@ -22,7 +22,7 @@ public class PlayerMouseController : MonoBehaviour
         {
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             Vector2 worldPoint = Camera.main.ScreenToWorldPoint(mousePosition);
-            PlayerAttackController.Instance.ShootProjectile(worldPoint);
+            PlayerAttackController.Instance.ShootProjectile(worldPoint, ProjectileType.Fireball);
             lastAttackTime = Time.time;
         }
     }
@@ -56,6 +56,26 @@ public class PlayerMouseController : MonoBehaviour
                     default:
                         break;
                 }
+            }
+        }
+    }
+
+    // Scroll through attack types
+    public void Scroll(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            float scrollValue = context.ReadValue<float>();
+
+            if (scrollValue > 0)
+            {
+                // Upwards scroll
+
+            }
+            else if (scrollValue < 0)
+            {
+                // Downwards scroll
+                
             }
         }
     }
