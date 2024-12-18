@@ -201,3 +201,4 @@ MonoBehaviour:
   damage: 2
   lifeTime: 2
   circleCollider2D: {fileID: 3211854440408773802}
+  explosionRadius: 2

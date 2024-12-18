@@ -87,7 +87,7 @@ public class EnemyMovementController : MonoBehaviour
     private void FollowPlayer()
     {
         // If character is not grounded don't check anything
-        if (!isGrounded) return; 
+        if (!isGrounded) return;
 
         float direction = Mathf.Sign(playerLocation.position.x - transform.position.x);
         rigidBody2D.velocity = new Vector2(direction * moveSpeed, rigidBody2D.velocity.y);
@@ -109,7 +109,7 @@ public class EnemyMovementController : MonoBehaviour
         Debug.DrawRay(transform.position, Vector2.up * 4f, Color.green);
 
         // No gap / obstacle / platform above in the path
-        if ((gapAhead.collider == null && groundInFront.collider == null) /*|| (platformAbove.collider == null && playerLocation.position.y > transform.position.y)*/)
+        if ((gapAhead.collider == null && groundInFront.collider == null))
         {
             shouldJump = true;
         }
@@ -119,57 +119,6 @@ public class EnemyMovementController : MonoBehaviour
             shouldJump = false;
         }
     }
-
-    /*
-    // Function to determine if the enemy can jump to reach the character
-    private bool CanReachPlatformWithJump()
-    {
-        float initialVerticalVelocity = rigidBody2D.velocity.y;
-        float gravity = Physics2D.gravity.y * rigidBody2D.gravityScale;
-        float jumpDuration = 2 * Mathf.Abs(initialVerticalVelocity) / Mathf.Abs(gravity);
-
-        float stepSize = 0.1f;
-        Vector2 startPosition = transform.position;
-        float initialHorizontalVelocity = moveSpeed * (isFacingRight ? 1 : -1);
-
-        for (float t = 0; t < jumpDuration; t += stepSize)
-        {
-            float x = startPosition.x + initialHorizontalVelocity * t;
-            float y = startPosition.y + initialVerticalVelocity * t + 0.5f * gravity * Mathf.Pow(t, 2);
-
-            Vector2 pointOnPath = new Vector2(x, y);
-
-            RaycastHit2D hit = Physics2D.Raycast(pointOnPath, Vector2.down, 0.1f, groundLayer);
-
-            if (hit.collider != null && hit.normal.y > 0)
-            {
-                Debug.Log($"Intersected at: {hit.point}");
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    // Debug function to draw jump curve
-    private void DrawJumpPath()
-    {
-        float stepSize = 0.1f;
-        Vector2 startPosition = transform.position;
-        Vector2 initialVelocity = new Vector2(0, jumpForce);
-
-        float gravity = Physics2D.gravity.y * rigidBody2D.gravityScale;
-
-        Vector2 previousPoint = startPosition;
-        for (float t = 0; t < 2.0f; t += stepSize)
-        {
-            float x = startPosition.x + moveSpeed * (isFacingRight ? 1 : -1) * t;
-            float y = startPosition.y + initialVelocity.y * t + 0.5f * gravity * Mathf.Pow(t, 2);
-            Vector2 currentPoint = new Vector2(x, y);
-            Debug.DrawLine(previousPoint, currentPoint, Color.red);
-            previousPoint = currentPoint;
-        }
-    }
-     */
 
     // Stop following the character
     private void StopFollowingPlayer()

@@ -15,6 +15,10 @@ public class PlayerMouseController : MonoBehaviour
     [SerializeField] private float attackTimer;
     private float lastAttackTime = -Mathf.Infinity;
 
+    private List<ProjectileType> projectileTypes = new List<ProjectileType> { ProjectileType.Fireball, ProjectileType.Iceball };
+    private ProjectileType currentActiveProjectileType = ProjectileType.Fireball;
+    private int currentProjectileIndex = 0;
+
     // Left click for attacking
     public void LeftClick(InputAction.CallbackContext context)
     {
@@ -22,7 +26,7 @@ public class PlayerMouseController : MonoBehaviour
         {
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             Vector2 worldPoint = Camera.main.ScreenToWorldPoint(mousePosition);
-            PlayerAttackController.Instance.ShootProjectile(worldPoint, ProjectileType.Fireball);
+            PlayerAttackController.Instance.ShootProjectile(worldPoint, currentActiveProjectileType);
             lastAttackTime = Time.time;
         }
     }
@@ -70,13 +74,15 @@ public class PlayerMouseController : MonoBehaviour
             if (scrollValue > 0)
             {
                 // Upwards scroll
-
+                currentProjectileIndex = (currentProjectileIndex + 1) % projectileTypes.Count;
             }
             else if (scrollValue < 0)
             {
                 // Downwards scroll
-                
+                currentProjectileIndex = (currentProjectileIndex - 1 + projectileTypes.Count) % projectileTypes.Count;
             }
+            currentActiveProjectileType = projectileTypes[currentProjectileIndex];
+            Debug.Log($"Current selected speel: {currentActiveProjectileType.ToString()}");
         }
     }
 }

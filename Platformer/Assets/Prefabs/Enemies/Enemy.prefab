@@ -287,17 +287,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 2.5
   jumpForce: 8
-  attackDamage: 2
+  detectionRadius: 4
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  minIdleTime: 1
+  maxIdleTime: 3
+  minMoveTime: 1
+  maxMoveTime: 4
   groundCheckPos: {fileID: 5156463214667759848}
   groundCheckSize: {x: 0.8, y: 0.06}
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
-  minIdleTime: 1
-  maxIdleTime: 3
-  minMoveTime: 1
-  maxMoveTime: 4
-  jumpCooldown: 1.5
+  attackDamage: 2
 --- !u!114 &6171119364472145589
 MonoBehaviour:
   m_ObjectHideFlags: 0
