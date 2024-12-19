@@ -200,4 +200,10 @@ MonoBehaviour:
   speed: 10
   damage: 1
   lifeTime: 3
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 8
+  wallLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
   circleCollider2D: {fileID: 3388392690020840141}

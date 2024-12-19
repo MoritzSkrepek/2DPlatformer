@@ -25,7 +25,6 @@ public class FireballProjectile : BasicProjectile
     }
 
     // Explode projectile and damage all enemies in overlap
-    // TODO: Make it so explosions dont go through solid walls | floors
     private void Explode()
     {
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
@@ -36,8 +35,12 @@ public class FireballProjectile : BasicProjectile
                 EnemyHealth enemy = hit.GetComponent<EnemyHealth>();
                 if (enemy != null && !alreadyHitEnemies.Contains(enemy))
                 {
-                    enemy.TakeDamage(damage);
-                    alreadyHitEnemies.Add(enemy);
+                    Debug.Log($"Obstacle in between {base.IsObstacleInBetween(transform.position, hit.transform.position)}");
+                    if (!base.IsObstacleInBetween(transform.position, hit.transform.position))
+                    {
+                        enemy.TakeDamage(damage);
+                        alreadyHitEnemies.Add(enemy);
+                    }
                 }
             }
         }

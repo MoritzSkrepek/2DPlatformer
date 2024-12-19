@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -10,6 +11,8 @@ public abstract class BasicProjectile : MonoBehaviour
     [SerializeField] private float speed;
     [SerializeField] public float damage;
     [SerializeField] private float lifeTime;
+    [SerializeField] public LayerMask groundLayerMask;
+    [SerializeField] public LayerMask wallLayerMask;
 
     [Header("Collider")]
     [SerializeField] public CircleCollider2D circleCollider2D;
@@ -23,16 +26,29 @@ public abstract class BasicProjectile : MonoBehaviour
         Destroy(gameObject, lifeTime); // Destroy after reaching lifetime end
     }
 
+    // Function to enable the attached CircleCollider2D of Projectile that is not a trigger
     protected virtual IEnumerator EnableCollider()
     {
         yield return new WaitForSeconds(0.05f);
         circleCollider2D.enabled = true;
     }
 
+    // Function to Initialize the projectile itself and give it a velocity to given direction
+    // -> This function is used to give the bullet its specified speed
     public void Initialize(Vector2 direction)
     {
         rigidBody = gameObject.GetComponent<Rigidbody2D>();
         rigidBody.velocity = direction * speed;
+    }
+
+    // Function to check if there is a wall / floor / obstacle between the explosion
+    // position of projectile and target enemy in overlay circle
+    // -> This function is used for projectiles that have some sort of area of effect
+    public bool IsObstacleInBetween(Vector2 origin, Vector2 target)
+    {
+        RaycastHit2D groundHit = Physics2D.Linecast(origin, target, groundLayerMask);
+        RaycastHit2D wallHit = Physics2D.Linecast(origin, target, wallLayerMask);
+        return (groundHit.collider != null || wallHit.collider != null) ? true : false;
     }
 
     // Collision with enemies
