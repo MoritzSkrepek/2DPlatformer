@@ -87,9 +87,9 @@ GameObject:
   - component: {fileID: 4398093077451787650}
   - component: {fileID: 7253810003714541064}
   - component: {fileID: 8051069279986616050}
-  - component: {fileID: 4511487893181002571}
-  - component: {fileID: 4011610322416796740}
   - component: {fileID: 6171119364472145589}
+  - component: {fileID: 5801801167890618229}
+  - component: {fileID: 3919704088198363343}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -238,72 +238,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1.55}
   m_EdgeRadius: 0
---- !u!58 &4511487893181002571
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 624032333007016097}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.7631579}
-  serializedVersion: 2
-  m_Radius: 6
---- !u!114 &4011610322416796740
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 624032333007016097}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d8fcd6618a482c4c9c7c1377c23f8f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 2.5
-  jumpForce: 8
-  detectionRadius: 4
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 8
-  obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  minIdleTime: 1
-  maxIdleTime: 3
-  minMoveTime: 1
-  maxMoveTime: 4
-  groundCheckPos: {fileID: 5156463214667759848}
-  groundCheckSize: {x: 0.8, y: 0.06}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 8
-  attackDamage: 2
 --- !u!114 &6171119364472145589
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -323,6 +257,47 @@ MonoBehaviour:
     dropChance: 60
   - itemPrefab: {fileID: 5127964936684831844, guid: 8d624c9684713714d80b0f94f623b727, type: 3}
     dropChance: 40
+--- !u!114 &5801801167890618229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 624032333007016097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9252469d76f59a4693f924d35a663de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 2.5
+  jumpForce: 8
+  jumpCooldown: 1.5
+  minIdleTime: 1
+  maxIdleTime: 3
+  minMoveTime: 1
+  maxMoveTime: 4
+  detectionRadius: 5
+  groundCheckPos: {fileID: 5156463214667759848}
+  groundCheckSize: {x: 0.8, y: 0.06}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 64
+--- !u!114 &3919704088198363343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 624032333007016097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fc0d6d5c86f4c5428a3475063305a00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackDamage: 2
 --- !u!1 &2165134813600879659
 GameObject:
   m_ObjectHideFlags: 0
@@ -750,7 +725,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &2572617611320580703
 MonoBehaviour:
   m_ObjectHideFlags: 0

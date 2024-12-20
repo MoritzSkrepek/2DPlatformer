@@ -1,5 +1,8 @@
 using System.Collections;
+using System.Runtime.CompilerServices;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
+using static UnityEngine.UI.Image;
 
 public class EnemyMovementController : MonoBehaviour
 {
@@ -16,12 +19,15 @@ public class EnemyMovementController : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     private bool isGrounded = true;
 
+    [Header("Wall Check")]
+    [SerializeField] private LayerMask wallLayer;
+
     // Random movement parameters
     [Header("Random Movement Timing")]
-    [SerializeField] private float minIdleTime = 1f;
-    [SerializeField] private float maxIdleTime = 3f;
-    [SerializeField] private float minMoveTime = 1f;
-    [SerializeField] private float maxMoveTime = 4f;
+    [SerializeField] private float minIdleTime;
+    [SerializeField] private float maxIdleTime;
+    [SerializeField] private float minMoveTime;
+    [SerializeField] private float maxMoveTime;
     private float movementTimer = 0f;
     private int moveDirection = 1;
     private bool isFacingRight = true;
@@ -31,13 +37,15 @@ public class EnemyMovementController : MonoBehaviour
     [SerializeField] private float jumpCooldown = 1.5f;
     private float lastJumpTime = -10f;
 
+    // Player following criteria
+    [Header("Player following")]
+    [SerializeField] private float detectionRadius;
+    private bool enemySighted = false;
+    private bool shouldJump = false;
+
     // States for random movement
     private enum EnemyState { Idle, Moving }
     private EnemyState currentState = EnemyState.Idle;
-
-    // Player following criteria
-    private bool enemySighted = false;
-    private bool shouldJump = false;
 
     // Components
     private Rigidbody2D rigidBody2D;
@@ -52,7 +60,7 @@ public class EnemyMovementController : MonoBehaviour
     void Update()
     {
         GroundCheck();
-        if (enemySighted)
+        if (IsPlayerSighted() && !CheckObstacleBetween())
         {
             FollowPlayer();
         }
@@ -183,24 +191,27 @@ public class EnemyMovementController : MonoBehaviour
         }
     }
 
-    // Player enters collsion zone
-    private void OnTriggerEnter2D(Collider2D collision)
+    private bool CheckObstacleBetween()
     {
-        if (collision.CompareTag("Player"))
-        {
-            enemySighted = true;
-            playerLocation = collision.GetComponent<Transform>();
-        }
+        if (playerLocation == null) return true;
+        RaycastHit2D groundHit = Physics2D.Linecast(transform.position, playerLocation.position, groundLayer);
+        RaycastHit2D wallHit = Physics2D.Linecast(transform.position, playerLocation.position, wallLayer);
+        return (groundHit.collider != null ||  wallHit.collider != null) ? true : false;
     }
 
-    // Player leaves collsion zone
-    private void OnTriggerExit2D(Collider2D collision)
+    private bool IsPlayerSighted()
     {
-        if (collision.CompareTag("Player"))
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(gameObject.GetComponent<SpriteRenderer>().bounds.center, detectionRadius);
+        foreach (Collider2D collider in colliders)
         {
-            enemySighted = false;
-            playerLocation = null;
+            if (collider.CompareTag("Player"))
+            {
+                playerLocation = collider.transform;
+                return true;
+            }
         }
+        playerLocation = null;
+        return false;
     }
 
     // Check if enemey is grounded
@@ -213,5 +224,8 @@ public class EnemyMovementController : MonoBehaviour
     {
         Gizmos.color = Color.white;
         Gizmos.DrawWireCube(groundCheckPos.position, groundCheckSize);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(groundCheckPos.position, detectionRadius);
     }
 }

@@ -63,26 +63,7 @@ public class PlayerHealth : MonoBehaviour
         characterSpriteRenderer = character.GetComponent<SpriteRenderer>();
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        EnemyMovementController enemy = collision.collider.GetComponent<EnemyMovementController>();
-        // In the future this will be a switch for all sorts of collisions
-        // e.g.: different enemies, traps, etc...
-        if (enemy != null)
-        {
-            StartCoroutine(Flash());
-            TakeDamage(enemy.attackDamage);
-        }
-    }
-
-    private IEnumerator Flash()
-    {
-        characterSpriteRenderer.color = Color.red;
-        yield return new WaitForSeconds(hitVisibilityDurtation);
-        characterSpriteRenderer.color = Color.white;
-    }
-
-    private void TakeDamage(float damage)
+    public void TakeDamage(float damage)
     {
         currentHealth -= damage;
         while (currentHealth <= 0 && currentHeartCount > 0)
@@ -99,13 +80,19 @@ public class PlayerHealth : MonoBehaviour
             GameStateController.Instance.TriggerGameOver();
             InputController.Instance.DisableInputActions();
         }
+        StartCoroutine(Flash());
         healthBarSlider.value = maxHealth - currentHealth;
     }
 
+    private IEnumerator Flash()
+    {
+        characterSpriteRenderer.color = Color.red;
+        yield return new WaitForSeconds(hitVisibilityDurtation);
+        characterSpriteRenderer.color = Color.white;
+    }
 
     private void HealPlayer(int healAmount)
     {
-        Debug.Log("Healing Player");
         currentHeartCount += healAmount;
         UpdateUI();
     }

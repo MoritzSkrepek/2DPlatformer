@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IceballProjectile : BasicProjectile
+public class IceballProjectile : BaseProjectile
 {
     protected override void OnEnemyEffect(EnemyHealth enemy)
     {

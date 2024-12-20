@@ -41,7 +41,7 @@ public class PlayerAttackController : MonoBehaviour
         GameObject projectileObject = Instantiate(selectedProjectilePrefab, spawnPosition, Quaternion.identity);
 
         // Initialisiere das Projektil
-        BasicProjectile projectile = projectileObject.GetComponent<BasicProjectile>();
+        BaseProjectile projectile = projectileObject.GetComponent<BaseProjectile>();
         if (projectile != null)
         {
             projectile.Initialize(direction);

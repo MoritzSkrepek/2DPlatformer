@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class FireballProjectile : BasicProjectile
+public class FireballProjectile : BaseProjectile
 {
     [Header("Fireball settings")]
     [SerializeField] private float explosionRadius;
@@ -35,7 +35,6 @@ public class FireballProjectile : BasicProjectile
                 EnemyHealth enemy = hit.GetComponent<EnemyHealth>();
                 if (enemy != null && !alreadyHitEnemies.Contains(enemy))
                 {
-                    Debug.Log($"Obstacle in between {base.IsObstacleInBetween(transform.position, hit.transform.position)}");
                     if (!base.IsObstacleInBetween(transform.position, hit.transform.position))
                     {
                         enemy.TakeDamage(damage);

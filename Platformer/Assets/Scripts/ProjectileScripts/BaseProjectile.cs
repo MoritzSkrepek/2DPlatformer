@@ -5,7 +5,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public abstract class BasicProjectile : MonoBehaviour
+public abstract class BaseProjectile : MonoBehaviour
 {
     [Header("Projectile settings")]
     [SerializeField] private float speed;
